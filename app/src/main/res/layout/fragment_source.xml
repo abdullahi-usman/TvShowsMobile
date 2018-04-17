@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!--<android.support.design.widget.TabLayout-->
+        <!--android:id="@+id/tvmdb_tab_categories"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:animateLayoutChanges="true"-->
+        <!--android:animationCache="true"-->
+        <!--android:orientation="horizontal"-->
+        <!--android:overScrollMode="ifContentScrolls"-->
+        <!--app:layout_constraintEnd_toEndOf="parent"-->
+        <!--app:layout_constraintStart_toStartOf="parent"-->
+        <!--app:layout_constraintTop_toTopOf="parent"-->
+        <!--app:tabGravity="center"-->
+        <!--app:tabMode="scrollable">-->
+
+        <!--&lt;!&ndash;<android.support.design.widget.TabItem&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_width="wrap_content"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_height="wrap_content"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:text="@string/tvmdb_category_lastest_movies" />&ndash;&gt;-->
+
+        <!--&lt;!&ndash;<android.support.design.widget.TabItem&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_width="wrap_content"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_height="wrap_content"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:text="@string/tvmdb_category_all_movies" />&ndash;&gt;-->
+
+        <!--&lt;!&ndash;<android.support.design.widget.TabItem&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_width="wrap_content"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_height="wrap_content"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:text="@string/tvmdb_category_lastest_tvshow" />&ndash;&gt;-->
+
+        <!--&lt;!&ndash;<android.support.design.widget.TabItem&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_width="wrap_content"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_height="wrap_content"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:text="@string/tvmdb_category_tvshows" />&ndash;&gt;-->
+    <!--</android.support.design.widget.TabLayout>-->
+
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/tmdb_tab_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="parent">
+
+        <android.support.v4.view.PagerTabStrip
+            android:id="@+id/pager_tab_stripe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+        </android.support.v4.view.PagerTabStrip>
+    </android.support.v4.view.ViewPager>
+
+</android.support.constraint.ConstraintLayout>
