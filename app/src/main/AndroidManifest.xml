@@ -3,6 +3,7 @@
     package="com.dahham.tvshowmobile">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -24,7 +25,11 @@
         <activity
             android:name=".ShowDetailsActivity"
             android:label="@string/title_activity_show_details"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="f83dad1aeb75d1a2f26d1d9aef4ed8c46a346d0a"
+            />
     </application>
 
 </manifest>

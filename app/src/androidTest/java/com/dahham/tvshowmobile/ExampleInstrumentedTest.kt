@@ -34,11 +34,12 @@ class ExampleInstrumentedTest {
     fun testTvShowMobileGetEpisodes() {
         val show = TvShows4Mobile()
 
-        val _show = show.getAllShows()[0]
+        val all_shows = show.getAllShows()
+        val _show = all_shows[330]
 
         show.getShowProperties(_show)
 
-        val serie = _show.series?.get(0)!!
+        val serie = _show.series?.get(_show.series!!.size - 1)!!
         serie.episodes = show.getEpisodes(serie)
 
         val links = show.getEpisodeLink(serie.episodes?.get(0)!!)

@@ -1,27 +1,44 @@
 package com.dahham.tvshowmobile
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
+import android.support.v4.app.ShareCompat
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
-import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
+import com.crashlytics.android.Crashlytics
+import com.crashlytics.android.core.CrashlyticsCore
 import com.dahham.tvshowmobile.fragments.TvShows4MobileFragment
-import com.dahham.tvshowmobile.fragments.TvmdbFragment
+import com.google.android.gms.ads.MobileAds
+import io.fabric.sdk.android.Fabric
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main_drawer.*
 
+
+
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
-    val tvmdb = TvmdbFragment()
-    val tvshow4mobile = TvShows4MobileFragment()
+    var tvshow4mobile = TvShows4MobileFragment()
+    val TVSHOWS4MOBILE_TAG = "tvshow4mobile";
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val crashlyticsKit = Crashlytics.Builder()
+                .core(CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())
+                .build()
+        Fabric.with(this, crashlyticsKit)
         setContentView(R.layout.activity_main_drawer)
         setSupportActionBar(toolbar)
+
+        if (savedInstanceState?.containsKey(TVSHOWS4MOBILE_TAG) == true) {
+            tvshow4mobile = supportFragmentManager.getFragment(savedInstanceState, TVSHOWS4MOBILE_TAG) as TvShows4MobileFragment
+        }
 
         val toggler = ActionBarDrawerToggle(this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 
@@ -30,7 +47,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         drawer_layout.addDrawerListener(toggler)
         nav_menu.setNavigationItemSelectedListener(this)
 
-        switchFragments(tvshow4mobile, "tvshow4mobile")
+        switchFragments(tvshow4mobile, TVSHOWS4MOBILE_TAG)
+
+        MobileAds.initialize(this, "ca-app-pub-5849046006048060~4044363744")
+
+    }
+
+    override fun onStart() {
+        super.onStart()
     }
 
     override fun onBackPressed() {
@@ -43,28 +67,66 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
+//    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+//        menuInflater.inflate(R.menu.menu_main, menu)
+//        return true
+//    }
+//
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        return when (item.itemId) {
+//            R.id.action_settings -> true
+//            else -> super.onOptionsItemSelected(item)
+//        }
+//    }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         drawer_layout.closeDrawer(GravityCompat.START)
         when(item.itemId){
-//            R.id.nav_source_tmdb -> switchFragments(tvmdb, "tvmdb")
-//            R.id.nav_source_tvshows4mobile -> switchFragments(tvshow4mobile, "tvshow4mobile")
-        }
+            R.id.nav_share -> share()
+            R.id.nav_send -> sendEmail()
+            R.id.nav_developer -> developer()
 
+        }
 
         return true
     }
+
+    fun developer(){
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.data = Uri.parse("http://play.google.com/store/apps/dev?id=6243316749639111813")
+
+        launchIntent(intent)
+    }
+
+    fun share(){
+        val link = "http:/play.google.com/store/apps/details?id=com.dahham.tvshowsmobile"
+        val intent = getShareIntent().setChooserTitle(R.string.share_using).setHtmlText(link).setText(link).setType("text/html").intent
+
+        launchIntent(intent)
+    }
+    fun sendEmail(){
+        val intent = getShareIntent().setEmailTo(arrayOf("abdullahidhako@gmail.com")).setText("Hi Abdullahi").setChooserTitle("Send Email Using").setType("text/email").intent
+
+        launchIntent(intent)
+    }
+    fun getShareIntent(): ShareCompat.IntentBuilder{
+        val intent = ShareCompat.IntentBuilder.from(this)
+
+        return intent
+    }
+
+    fun launchIntent(intent: Intent){
+        try {
+            startActivity(intent)
+        }catch (e: ActivityNotFoundException){
+            Toast.makeText(this, R.string.can_perform_request, Toast.LENGTH_LONG).show()
+        }
+    }
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+        supportFragmentManager.putFragment(outState, TVSHOWS4MOBILE_TAG, tvshow4mobile)
+    }
+
 
     fun switchFragments(fragment: Fragment, tag: String){
         supportFragmentManager.beginTransaction().replace(R.id.fragment, fragment, tag).commit()

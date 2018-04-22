@@ -33,10 +33,9 @@ class Episode(val name: String, val link: String): Parcelable{
             return arrayOfNulls(size)
         }
     }
-
 }
 
-class Series(val season: String, var episodes: List<Episode>? = null, val link: String): Parcelable{
+class Series(val season: String, var episodes: List<Episode>? = null, val link: String?): Parcelable{
 
     constructor(parcel: Parcel) : this(
             parcel.readString(),
@@ -68,8 +67,8 @@ class Series(val season: String, var episodes: List<Episode>? = null, val link: 
 
 }
 class Show(val name: String, var description: String? = null, var casts: List<String>? = null,
-           var rating: Float? = null, var genre: List<String>? = null, var runtime: Int? = null,  var series: List<Series>? = null,  var poster: String? = null,
-           var dateAdded: String? = null, var link: String? = null, var views: Int? = null): Parcelable{
+           var rating: Float? = null, var genre: List<String>? = null, var runtime: String? = null,  var series: List<Series>? = null,  var poster: String? = null,
+           var dateAdded: String? = null, var link: String? = null, var views: Int? = null): Parcelable, Comparable<Show>{
 
     constructor(parcel: Parcel) : this(
             parcel.readString(),
@@ -77,7 +76,7 @@ class Show(val name: String, var description: String? = null, var casts: List<St
             parcel.createStringArrayList(),
             parcel.readValue(Float::class.java.classLoader) as? Float,
             parcel.createStringArrayList(),
-            parcel.readValue(Int::class.java.classLoader) as? Int,
+            parcel.readString(),
             parcel.createTypedArrayList(Series),
             parcel.readString(),
             parcel.readString(),
@@ -85,9 +84,13 @@ class Show(val name: String, var description: String? = null, var casts: List<St
             parcel.readValue(Int::class.java.classLoader) as? Int) {
     }
 
+    override fun compareTo(other: Show): Int {
+        return this.name.compareTo(other.name)
+    }
     override fun hashCode(): Int {
         return this.name.hashCode()
     }
+
     override fun equals(other: Any?): Boolean {
         return other is Show && other.name == this.name
     }
@@ -98,7 +101,7 @@ class Show(val name: String, var description: String? = null, var casts: List<St
         dest?.writeStringList(casts)
         dest?.writeValue(rating)
         dest?.writeStringList(genre)
-        dest?.writeValue(runtime)
+        dest?.writeString(runtime)
         dest?.writeTypedList(series)
         dest?.writeString(poster)
         dest?.writeString(dateAdded)

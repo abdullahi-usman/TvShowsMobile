@@ -52,7 +52,7 @@ class SquareFrameLayout : FrameLayout {
 
             // Now use the smallest of the measured dimensions for both dimensions
             val minSize = Math.min(measuredWidth, measuredHeight)
-            setMeasuredDimension(minSize, minSize)
+            setMeasuredDimension(minSize, minSize + ((minSize / 10) * 4))
             return
         }
 
@@ -67,7 +67,8 @@ class SquareFrameLayout : FrameLayout {
             size = Math.min(widthSize, heightSize)
         }
 
-        val newMeasureSpec = View.MeasureSpec.makeMeasureSpec(size, View.MeasureSpec.EXACTLY)
-        super.onMeasure(newMeasureSpec, newMeasureSpec)
+        val newMeasureSpecWidth = View.MeasureSpec.makeMeasureSpec(size, View.MeasureSpec.EXACTLY)
+        val newMeasureSpecHeigth = View.MeasureSpec.makeMeasureSpec(size + ((size / 10) * 4), View.MeasureSpec.EXACTLY)
+        super.onMeasure(newMeasureSpecWidth, newMeasureSpecHeigth)
     }
 }

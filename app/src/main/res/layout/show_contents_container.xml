@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ViewSwitcher
+<ViewSwitcher xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/show_content_viewswitcher"
-    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <android.support.v7.widget.LinearLayoutCompat
         android:id="@+id/error_container"
@@ -19,13 +19,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Please Wait" />
+            android:text="Please Wait"
+            android:textSize="14sp"
+            android:textStyle="normal|bold"
+            android:typeface="monospace"
+            app:fontFamily="monospace" />
 
         <ViewSwitcher
             android:id="@+id/error_button_switcher"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp">
+            android:layout_margin="8dp"
+            android:fitsSystemWindows="true">
 
             <ProgressBar
                 android:id="@+id/error_reload_progressbar"
@@ -40,8 +45,10 @@
                 style="?attr/borderlessButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/reload_background"
                 android:layout_gravity="center"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:background="@drawable/reload_background"
                 android:text="RELOAD"
                 android:textSize="12sp" />
 
@@ -53,7 +60,6 @@
         android:id="@+id/recycler_shows_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:fitsSystemWindows="true"/>
+        android:layout_gravity="fill" />
 
 </ViewSwitcher>

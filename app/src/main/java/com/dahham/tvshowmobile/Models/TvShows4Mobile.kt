@@ -1,6 +1,11 @@
 package com.dahham.tvshowmobile.Models
 
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import java.io.BufferedInputStream
+import java.io.StringWriter
+import java.net.HttpURLConnection
+import java.net.URL
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -17,12 +22,34 @@ class TvShows4Mobile {
     fun getEpisodes(series: Series): List<Episode> {
 
         val episodes = ArrayList<Episode>()
+        series.episodes = episodes
 
-        getDataList(Jsoup.connect(series.link).get().toString()) { name, link ->
+        var series_link = series.link
 
-            val episode = Episode(name = name, link = link)
+        Outside@ while (true) {
 
-            episodes.add(episode)
+            var html: String
+            try {
+                html = Jsoup.connect(series_link).get().toString()
+            } catch (e: Exception) {
+                html = getDocumentUsingHttp(series_link!!)
+            }
+
+            getDataList(html) { name, link ->
+
+                val episode = Episode(name = name, link = link)
+
+                episodes.add(episode)
+            }
+
+            for (child in Jsoup.parse(html).select("div.page_nav").select("a[href^=http://tvshows4mobile.com]")) {
+                if (child.text().contains("Next", true)) {
+                    series_link = child.attr("href")
+                    continue@Outside
+                }
+            }
+
+            break
 
         }
 
@@ -31,7 +58,14 @@ class TvShows4Mobile {
 
     fun getLastestEpisodes(): List<LastestEpisode> {
 
-        val jsoup = Jsoup.connect(HOME_URL).get()
+        var jsoup: Document
+
+        try {
+            jsoup = Jsoup.connect(HOME_URL).get()
+        } catch (e: Exception) {
+            jsoup = Jsoup.parse(getDocumentUsingHttp(HOME_URL))
+        }
+
         val elements = jsoup.select("div.data_list")
         val latest_episodes = ArrayList<LastestEpisode>()
         for (element in elements) {
@@ -40,7 +74,7 @@ class TvShows4Mobile {
                 if (child_element.`is`("div[class=\"data main\"]")) {
                     val splits = child_element.text().split("-")
 
-                    val lastest_episode = LastestEpisode(splits[0].trim(), season = splits[1].trim(), episode = splits[2].trim(), dateAdded = formatDate(splits[3]))
+                    val lastest_episode = LastestEpisode(name = splits[0].trim(), season = splits[1].trim(), episode = if (splits.size > 4) (splits[2] + "-" + splits[3]).trim() else splits[2].trim(), dateAdded = formatDate(splits[splits.size - 1]))
 
                     latest_episodes.add(lastest_episode)
                 }
@@ -53,18 +87,32 @@ class TvShows4Mobile {
 
     fun getAllShows(): List<Show> {
 
-        val jsoup = Jsoup.connect(ALL_SHOW_URL).get()
+        var jsoup: Document
+        try {
+            jsoup = Jsoup.connect(ALL_SHOW_URL).get()
+        } catch (e: Exception) {
+            jsoup = Jsoup.parse(getDocumentUsingHttp(ALL_SHOW_URL))
+        }
         val all_shows = ArrayList<Show>()
+
         for ((name, link) in getDataList(jsoup.toString(), null)) {
             all_shows.add(Show(name = name, link = link))
         }
 
+
+        Collections.sort(all_shows)
         return all_shows
     }
 
 
     fun getShowProperties(show: Show): Show {
-        val jsoup = Jsoup.connect(show.link).get()
+
+        var jsoup: Document
+        try {
+            jsoup = Jsoup.connect(show.link).get()
+        } catch (e: Exception) {
+            jsoup = Jsoup.parse(getDocumentUsingHttp(show.link!!))
+        }
 
         show.poster = jsoup.select("div.img").select("img[src^=http://tvshows4mobile.com/res/tv_serials]").attr("src")
 
@@ -78,7 +126,7 @@ class TvShows4Mobile {
             when (splits[0]) {
                 "Casts" -> show.casts = splits[1].split(",")
                 "Genres" -> show.genre = splits[1].split(",")
-                "Run Time" -> show.runtime = intPart(splits[1])
+                "Run Time" -> show.runtime = splits[1]
                 "Views" -> show.views = intPart(splits[1])
                 "Rating" -> show.rating = removeLetters(splits[1]).toFloat()
                 "Seasons" -> show.series = ArrayList(intPart(splits[1]))
@@ -109,9 +157,14 @@ class TvShows4Mobile {
     fun getLastestEpisodesLinks(vararg latest_episodes: LastestEpisode) {
 
         if (this.all_shows.isEmpty) {
-            val jsoup_all_shows = Jsoup.connect(ALL_SHOW_URL).get()
+            var jsoup_all_shows: String
+            try {
+                jsoup_all_shows = Jsoup.connect(ALL_SHOW_URL).get().toString()
+            } catch (e: Exception) {
+                jsoup_all_shows = getDocumentUsingHttp(ALL_SHOW_URL)
+            }
 
-            all_shows = getDataList(jsoup_all_shows.toString(), null)
+            all_shows = getDataList(jsoup_all_shows, null)
 
         }
 
@@ -122,13 +175,22 @@ class TvShows4Mobile {
                 val _show = Show(name = latest_episode.name, link = all_shows[latest_episode.name])
                 getShowProperties(_show)
 
+                latest_episode.poster = _show.poster
+
                 if (_show.series != null) {
 
                     for (_serie in _show.series!!) {
 
                         if (_serie.season == latest_episode.season) {
 
-                            val all_episodes = getDataList(Jsoup.connect(_serie.link).get().toString(), null)
+                            var html: String
+
+                            try{
+                                html = Jsoup.connect(_serie.link).get().toString()
+                            }catch (e: Exception){
+                                html = getDocumentUsingHttp(_serie.link!!)
+                            }
+                            val all_episodes = getDataList(html, null)
 
                             if (all_episodes.containsKey(latest_episode.episode)) {
 
@@ -143,18 +205,25 @@ class TvShows4Mobile {
 
 
     private fun getDownloadLink(url: String): List<Link> {
-        val links = getDataList(Jsoup.connect(url).get().toString(), null)
+        var html: String
+        try {
+            html = Jsoup.connect(url).get().toString()
+        } catch (e: Exception) {
+            html = getDocumentUsingHttp(url)
+        }
+
+        val links = getDataList(html, null)
 
         val _links = ArrayList<Link>()
 
         for ((_name, _link) in links) {
 
             if (_name.contains("HD", true) && _name.endsWith("mp4", true)) {
-                _links.add(Link(Link.Type.HD, _link))
+                _links.add(Link(Link.HD, _link))
             } else if (_name.endsWith("3gp", true)) {
-                _links.add(Link(Link.Type.GP3, _link))
+                _links.add(Link(Link.GP3, _link))
             } else if (_name.endsWith("mp4", true)) {
-                _links.add(Link(Link.Type.MP4, _link))
+                _links.add(Link(Link.MP4, _link))
             }
 
         }
@@ -193,5 +262,29 @@ class TvShows4Mobile {
 
     private fun formatDate(str: String): String {
         return str.replace("[", "").replace("]", "").trim()
+    }
+
+    private fun getDocumentUsingHttp(url: String): String {
+        val connection = URL(url).openConnection() as HttpURLConnection
+
+        val stream = BufferedInputStream(connection.inputStream)
+
+        var i = 0
+        val writer = StringWriter()
+        while (true){
+            i = stream.read()
+            if (i != -1){
+                writer.write(i)
+            }else {
+                break
+            }
+        }
+
+        writer.flush()
+        writer.close()
+        stream.close()
+
+
+        return writer.toString()
     }
 }

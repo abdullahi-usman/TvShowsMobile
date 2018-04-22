@@ -1,4 +1,4 @@
-package com.dahham.tvshowmobile.adapters
+package com.dahham.tvshowmobile.fragments
 
 import android.support.v7.widget.RecyclerView
 import android.view.View

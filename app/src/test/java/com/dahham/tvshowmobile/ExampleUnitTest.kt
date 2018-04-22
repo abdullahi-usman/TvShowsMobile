@@ -1,7 +1,6 @@
 package com.dahham.tvshowmobile
 
 import com.dahham.tvshowmobile.Models.LastestEpisode
-import com.dahham.tvshowmobile.ViewModels.AbstractShowViewModel
 import com.dahham.tvshowmobile.ViewModels.TvShows4MobileViewModel
 import info.movito.themoviedbapi.TmdbApi
 import org.junit.Assert.assertEquals
