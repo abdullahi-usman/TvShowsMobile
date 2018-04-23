@@ -3,7 +3,6 @@ package com.dahham.tvshowmobile.fragments
 import android.app.Activity
 import android.arch.lifecycle.LiveData
 import android.content.Intent
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Environment
 import android.support.design.widget.Snackbar
@@ -16,8 +15,6 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.bumptech.glide.request.target.BitmapImageViewTarget
-import com.bumptech.glide.request.transition.Transition
 import com.dahham.tvshowmobile.Models.Link
 import com.dahham.tvshowmobile.Models.Show
 import com.dahham.tvshowmobile.R
@@ -25,9 +22,7 @@ import com.dahham.tvshowmobile.ShowDetailsActivity
 import com.dahham.tvshowmobile.ViewModels.TvShows4MobileViewModel
 import kotlinx.android.synthetic.main.movie.view.*
 import kotlinx.android.synthetic.main.show_contents_container.*
-import java.io.BufferedOutputStream
 import java.io.File
-import java.io.FileOutputStream
 
 /**
  * Created by dahham on 4/6/18.
@@ -38,8 +33,6 @@ class TvShows4MobileAllShows: AbstractShowsFragment<Show>() {
 
 
     val SHOWS = "shows"
-
-    val pictures = ArrayList<String>()
 
     override fun getLiveData(): LiveData<List<Show>> {
         return lifecycle.showViewModel.shows
@@ -56,16 +49,10 @@ class TvShows4MobileAllShows: AbstractShowsFragment<Show>() {
                 lifecycle.showViewModel.shows.value = saved_all_shows.toList() as? List<Show>
             }
         }
-
-        if (pictures.isEmpty()) {
-            getDownloadPath()?.listFiles()?.forEach {
-                pictures.add(it.name)
-            }
-        }
     }
 
-    fun getDownloadPath(): File?{
-        return context?.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+    fun getDownloadPath(): String?{
+        return context?.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -77,10 +64,6 @@ class TvShows4MobileAllShows: AbstractShowsFragment<Show>() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-
-    }
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
         super.setUserVisibleHint(isVisibleToUser)
 
@@ -98,13 +81,22 @@ class TvShows4MobileAllShows: AbstractShowsFragment<Show>() {
         return null
     }
 
+    override fun onNext(item: Show, msg: String) {
+        val downloaded_file = getDownloadPath() + "/" + item.name
+
+        if (File(downloaded_file).exists()) {
+            item.poster = downloaded_file
+        }
+
+        super.onNext(item, msg)
+    }
+
     override fun onCompleted() {
         super.onCompleted()
 
         val listener = object : TvShows4MobileViewModel.ShowsViewModelListener<Show>{
             override fun onNext(item: Show, msg: String) {
-                if (item.poster != null) {
-                    pictures.add(item.poster!!)
+                if (item.poster != null || item.poster?.isEmpty() == false) {
                     val item_index = data.value!!.indexOf(item)
                     recycler_shows_container.adapter.notifyItemChanged(item_index)
                 }
@@ -115,13 +107,15 @@ class TvShows4MobileAllShows: AbstractShowsFragment<Show>() {
             val shows = ArrayList<Show>()
             shows.addAll(data.value?.toTypedArray()!!)
             data.value?.forEach {
-                if (pictures.contains(it.name)){
+
+                if (it.poster != null && it.poster?.isEmpty() == false){
                     shows.remove(it)
                 }
+
             }
 
             if (shows.size > 0) {
-                lifecycle.showViewModel.getShowsProperties(*shows.toTypedArray(), listener = listener)
+                lifecycle.showViewModel.getShowsProperties(*shows.toTypedArray(), listener = listener, photoDownloadLocation = getDownloadPath())
             }
         }
     }
@@ -143,6 +137,13 @@ class TvShows4MobileAllShows: AbstractShowsFragment<Show>() {
             lifecycle.showViewModel.getShowsProperties(show, listener = object :TvShows4MobileViewModel.ShowsViewModelListener<Show>{
                 override fun onNext(item: Show, msg: String) {
                     super.onNext(item, msg)
+
+                    val downloaded_file = getDownloadPath() + "/" + item.name
+
+                    if (File(downloaded_file).exists()) {
+                        item.poster = downloaded_file
+                    }
+
                     startShowDetailsActivity()
                 }
 
@@ -156,14 +157,14 @@ class TvShows4MobileAllShows: AbstractShowsFragment<Show>() {
                     super.onCompleted()
                     progressDialog.dismiss()
                 }
-            })
+
+            }, photoDownloadLocation = null)
 
         }else {
             startShowDetailsActivity()
         }
 
     }
-
 
     override fun load() {
         if (userVisibleHint) {
@@ -174,44 +175,28 @@ class TvShows4MobileAllShows: AbstractShowsFragment<Show>() {
 
     private inner class AllShowsAdapter : RecyclerView.Adapter<ViewHolder>() {
 
-
         override fun getItemCount(): Int {
             return data.value?.size ?: 0
         }
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder{
             return ViewHolder(LayoutInflater.from(context).inflate(R.layout.movie, parent, false))
         }
 
+        override fun onViewRecycled(holder: ViewHolder) {
+            super.onViewRecycled(holder)
+            holder._itemView.movie_poster.setImageDrawable(null)
+        }
+
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-
             val show = data.value?.get(position)
-
 
             holder._itemView.movie_name.text = show?.name
 
-            if (pictures.contains(show?.name)) {
-                val downloadPath = getDownloadPath()?.absolutePath + "/" + show?.name
-                glide.load(downloadPath).into(holder._itemView.movie_poster)
-            } else{
-
-                glide.asBitmap().load(show?.poster).into(object : BitmapImageViewTarget(holder._itemView.movie_poster){
-                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                        super.onResourceReady(resource, transition)
-                        holder._itemView.movie_poster.setImageBitmap(resource)
-                        Thread(Runnable {
-
-                            val download_path = getDownloadPath()
-                            if (download_path != null) {
-                                val out_file = BufferedOutputStream(FileOutputStream(download_path.absolutePath + "/" + show?.name))
-                                resource.compress(Bitmap.CompressFormat.JPEG, 100, out_file)
-                                out_file.flush()
-                                out_file.close()
-                            }
-                        }).start()
-                    }
-                })
+            if (show?.poster != null && File(show.poster).exists()) {
+                glide.load(show.poster).into(holder._itemView.movie_poster)
             }
+
             holder._itemView.setOnClickListener{
                 data.value?.get(recycler_shows_container.getChildAdapterPosition(it))
 

@@ -3,6 +3,7 @@ package com.dahham.tvshowmobile
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
 import com.dahham.tvshowmobile.Models.TvShows4Mobile
+import org.jsoup.Jsoup
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -48,4 +49,10 @@ class ExampleInstrumentedTest {
         System.out.println(links[0].link)
     }
 
+    @Test
+    fun testJsoup(){
+        val html = Jsoup.connect("http://tvshows4mobile.com").execute().body()
+
+        System.out.println(html)
+    }
 }

@@ -13,7 +13,6 @@ import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import android.widget.Toast
 import com.crashlytics.android.Crashlytics
-import com.crashlytics.android.core.CrashlyticsCore
 import com.dahham.tvshowmobile.fragments.TvShows4MobileFragment
 import com.google.android.gms.ads.MobileAds
 import io.fabric.sdk.android.Fabric
@@ -29,10 +28,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val crashlyticsKit = Crashlytics.Builder()
-                .core(CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())
-                .build()
-        Fabric.with(this, crashlyticsKit)
+        Fabric.with(this, Crashlytics())
         setContentView(R.layout.activity_main_drawer)
         setSupportActionBar(toolbar)
 

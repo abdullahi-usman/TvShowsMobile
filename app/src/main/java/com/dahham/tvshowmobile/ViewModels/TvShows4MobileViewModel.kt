@@ -9,6 +9,10 @@ import io.reactivex.FlowableEmitter
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import java.io.BufferedInputStream
+import java.io.FileOutputStream
+import java.net.HttpURLConnection
+import java.net.URL
 
 /**
  * Created by dahham on 4/6/18.
@@ -56,27 +60,6 @@ class TvShows4MobileViewModel : ViewModel() {
         LASTEST_MOVIES, ALL_MOVIES, ALL_TV_SHOWS, LASTEST_TV_EPISODES, EPISODE
     }
 
-//    fun getAllShows(): MutableLiveData<List<Show>> {
-//        return shows
-//    }
-
-//    fun getAllMovies(): LiveData<List<Movie>> {
-//        return movies
-//    }
-
-//    fun getLastestEpisodes(): MutableLiveData<List<LastestEpisode>> {
-//        return lastestEpisodes
-//    }
-
-//    fun getLastestMovies(): LiveData<List<LastestMovie>> {
-//        return lastestMovies
-//    }
-
-//    fun getEpisodes(): LiveData<List<Episode>> {
-//        return episodes
-//    }
-
-
     fun stopAll() {
 
         for (disposable in disposables) {
@@ -108,7 +91,7 @@ class TvShows4MobileViewModel : ViewModel() {
 
     }
 
-    fun getShowsProperties(vararg shows: Show, listener: ShowsViewModelListener<Show>?) {
+    fun getShowsProperties(vararg shows: Show, listener: ShowsViewModelListener<Show>?, photoDownloadLocation: String?) {
         listener?.onStarted()
 
         val flowable = Flowable.create({ e: FlowableEmitter<Show> ->
@@ -123,6 +106,42 @@ class TvShows4MobileViewModel : ViewModel() {
                     }
                     continue
                 }
+
+                if (photoDownloadLocation != null && show.poster != null && show.poster?.isEmpty() == false){
+                    var connection : HttpURLConnection? = null
+                    var stream : BufferedInputStream? = null
+                    var out_put: FileOutputStream? = null
+                    try {
+                        connection = URL(show.poster).openConnection() as HttpURLConnection
+
+                        stream = BufferedInputStream(connection.inputStream)
+
+                        val download_name = photoDownloadLocation + "/" + show.name
+                        out_put = FileOutputStream(download_name)
+
+                        var i = 0
+                        while (true){
+                            i = stream.read()
+
+                            if (i == -1){
+                                break
+                            }
+
+                            out_put.write(i)
+                        }
+
+                        show.poster = download_name
+                    }catch (e: Exception){
+
+                    }finally {
+                        out_put?.flush()
+                        out_put?.close()
+                        stream?.close()
+
+                    }
+
+                }
+
                 e.onNext(show)
             }
 
@@ -163,9 +182,9 @@ class TvShows4MobileViewModel : ViewModel() {
             setState(TYPE.ALL_TV_SHOWS, STATE.FINISHED)
             e.onComplete()
         }, BackpressureStrategy.BUFFER).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe({
+            listner?.onNext(it, "")
             _shows.add(it)
             shows.value = _shows
-            listner?.onNext(it, "")
         }, {
             setState(TYPE.ALL_TV_SHOWS, STATE.STOPPED)
             listner?.onError(it)
@@ -202,9 +221,9 @@ class TvShows4MobileViewModel : ViewModel() {
             setState(TYPE.LASTEST_TV_EPISODES, STATE.FINISHED)
             e.onComplete()
         }, BackpressureStrategy.BUFFER).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe({
+            listner?.onNext(it, "")
             _lastestEpisodes.add(it)
             lastestEpisodes.value = _lastestEpisodes
-            listner?.onNext(it, "")
         }, {
             setState(TYPE.LASTEST_TV_EPISODES, STATE.STOPPED)
             listner?.onError(it)
@@ -240,9 +259,9 @@ class TvShows4MobileViewModel : ViewModel() {
             setState(TYPE.EPISODE, STATE.FINISHED)
             e.onComplete()
         }, BackpressureStrategy.BUFFER).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe({
+            listner?.onNext(it, "")
             _episodes.add(it)
             episodes.value = _episodes
-            listner?.onNext(it, "")
         }, {
             setState(TYPE.EPISODE, STATE.STOPPED)
             listner?.onError(it)

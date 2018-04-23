@@ -1,7 +1,6 @@
 package com.dahham.tvshowmobile.Models
 
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import java.io.BufferedInputStream
 import java.io.StringWriter
 import java.net.HttpURLConnection
@@ -28,12 +27,7 @@ class TvShows4Mobile {
 
         Outside@ while (true) {
 
-            var html: String
-            try {
-                html = Jsoup.connect(series_link).get().toString()
-            } catch (e: Exception) {
-                html = getDocumentUsingHttp(series_link!!)
-            }
+            val html = getHtmlString(series_link!!)
 
             getDataList(html) { name, link ->
 
@@ -58,13 +52,7 @@ class TvShows4Mobile {
 
     fun getLastestEpisodes(): List<LastestEpisode> {
 
-        var jsoup: Document
-
-        try {
-            jsoup = Jsoup.connect(HOME_URL).get()
-        } catch (e: Exception) {
-            jsoup = Jsoup.parse(getDocumentUsingHttp(HOME_URL))
-        }
+        val jsoup = Jsoup.parse(getHtmlString(HOME_URL))
 
         val elements = jsoup.select("div.data_list")
         val latest_episodes = ArrayList<LastestEpisode>()
@@ -87,12 +75,8 @@ class TvShows4Mobile {
 
     fun getAllShows(): List<Show> {
 
-        var jsoup: Document
-        try {
-            jsoup = Jsoup.connect(ALL_SHOW_URL).get()
-        } catch (e: Exception) {
-            jsoup = Jsoup.parse(getDocumentUsingHttp(ALL_SHOW_URL))
-        }
+        val jsoup = Jsoup.parse(getHtmlString(ALL_SHOW_URL))
+
         val all_shows = ArrayList<Show>()
 
         for ((name, link) in getDataList(jsoup.toString(), null)) {
@@ -107,12 +91,7 @@ class TvShows4Mobile {
 
     fun getShowProperties(show: Show): Show {
 
-        var jsoup: Document
-        try {
-            jsoup = Jsoup.connect(show.link).get()
-        } catch (e: Exception) {
-            jsoup = Jsoup.parse(getDocumentUsingHttp(show.link!!))
-        }
+        val jsoup = Jsoup.parse(getHtmlString(show.link!!))
 
         show.poster = jsoup.select("div.img").select("img[src^=http://tvshows4mobile.com/res/tv_serials]").attr("src")
 
@@ -157,12 +136,7 @@ class TvShows4Mobile {
     fun getLastestEpisodesLinks(vararg latest_episodes: LastestEpisode) {
 
         if (this.all_shows.isEmpty) {
-            var jsoup_all_shows: String
-            try {
-                jsoup_all_shows = Jsoup.connect(ALL_SHOW_URL).get().toString()
-            } catch (e: Exception) {
-                jsoup_all_shows = getDocumentUsingHttp(ALL_SHOW_URL)
-            }
+            val jsoup_all_shows = getHtmlString(ALL_SHOW_URL)
 
             all_shows = getDataList(jsoup_all_shows, null)
 
@@ -183,13 +157,8 @@ class TvShows4Mobile {
 
                         if (_serie.season == latest_episode.season) {
 
-                            var html: String
+                            val html = getHtmlString(_serie.link!!)
 
-                            try{
-                                html = Jsoup.connect(_serie.link).get().toString()
-                            }catch (e: Exception){
-                                html = getDocumentUsingHttp(_serie.link!!)
-                            }
                             val all_episodes = getDataList(html, null)
 
                             if (all_episodes.containsKey(latest_episode.episode)) {
@@ -205,12 +174,7 @@ class TvShows4Mobile {
 
 
     private fun getDownloadLink(url: String): List<Link> {
-        var html: String
-        try {
-            html = Jsoup.connect(url).get().toString()
-        } catch (e: Exception) {
-            html = getDocumentUsingHttp(url)
-        }
+        val html = getHtmlString(url)
 
         val links = getDataList(html, null)
 
@@ -262,6 +226,14 @@ class TvShows4Mobile {
 
     private fun formatDate(str: String): String {
         return str.replace("[", "").replace("]", "").trim()
+    }
+
+    private fun getHtmlString(url: String): String{
+        return try {
+            Jsoup.connect(url).execute().body()
+        } catch (e: Exception) {
+            getDocumentUsingHttp(url)
+        }
     }
 
     private fun getDocumentUsingHttp(url: String): String {

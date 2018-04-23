@@ -83,7 +83,7 @@ abstract class AbstractShowsFragment<T>  : Fragment(), TvShows4MobileViewModel.S
             return
         }
 
-        Toast.makeText(context, R.string.show_loaded_successfully, Toast.LENGTH_LONG).show()
+//        Toast.makeText(context, R.string.show_loaded_successfully, Toast.LENGTH_LONG).show()
     }
 
     fun prepareRecyclerView(){

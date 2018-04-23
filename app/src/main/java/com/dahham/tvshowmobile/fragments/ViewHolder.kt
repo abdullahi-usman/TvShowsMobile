@@ -8,6 +8,4 @@ import android.view.View
  * This file is part of TVShowMobile licensed under GNU Public License
  *
  */
-class ViewHolder (itemView: View) : RecyclerView.ViewHolder(itemView) {
-    var _itemView: View = itemView
-}
+class ViewHolder (var _itemView: View) : RecyclerView.ViewHolder(_itemView)
