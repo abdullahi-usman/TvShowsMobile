@@ -126,8 +126,6 @@ abstract class AbstractShowsFragment<T>  : Fragment(), TvShows4MobileViewModel.S
     abstract fun load()
 
     fun enqueue(name: String, season: String, episode: String, link: Link){
-        var ext  = "mp4"
-        if(link.type == Link.GP3) ext = "3gp"
 
         val downloadManager = context?.getSystemService(Context.DOWNLOAD_SERVICE) as? DownloadManager
 
@@ -135,9 +133,11 @@ abstract class AbstractShowsFragment<T>  : Fragment(), TvShows4MobileViewModel.S
         request.allowScanningByMediaScanner()
         request.setTitle(name)
         request.setDescription("${season} ${episode}")
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MOVIES, "${name} - ${season} - ${episode}.$ext")
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MOVIES, "${name} - ${season} - ${episode}.${if(link.type == Link.GP3) "3gp" else "mp4"}")
         request.setVisibleInDownloadsUi(true)
         downloadManager?.enqueue(request)
+        downloadManager?.
     }
 
     abstract fun getDownloadLink(episode: T): List<Link>?

@@ -72,7 +72,7 @@ class SeasonTabFragment : AbstractShowsFragment<Episode>() {
     }
 
     override fun getDownloadLink(episode: Episode): List<Link>? {
-        return lifecycle.showViewModel.getEpisodeLink(episode)
+        return lifecycle.showViewModel.getEpisodeLink(show_name, series.season, episode)
     }
 
     private inner class SeasonTabAdapter : RecyclerView.Adapter<ViewHolder>() {

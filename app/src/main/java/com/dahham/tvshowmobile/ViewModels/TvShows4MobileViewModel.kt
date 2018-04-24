@@ -274,10 +274,37 @@ class TvShows4MobileViewModel : ViewModel() {
     }
 
     fun getLastestEpisodesLinks(vararg latest_episodes: LastestEpisode) {
-        tvShows4Mobile.getLastestEpisodesLinks(*latest_episodes)
+        //tvShows4Mobile.getLastestEpisodesLinks(*latest_episodes)
+
+        //TODO before we could be able to devise how tvshows4mobile.com query its download link from raw link let just get it direct
+        for (latest_episode in latest_episodes){
+            val links = ArrayList<Link>()
+
+            links.add(getDownloadLinkDirect(latest_episode.name, latest_episode.season!!, latest_episode.episode!!, Link.GP3))
+            links.add(getDownloadLinkDirect(latest_episode.name, latest_episode.season, latest_episode.episode, Link.MP4))
+            links.add(getDownloadLinkDirect(latest_episode.name, latest_episode.season, latest_episode.episode, Link.HD))
+
+            latest_episode.link = links
+            return
+        }
+
     }
 
-    fun getEpisodeLink(episodes: Episode): List<Link> {
-        return tvShows4Mobile.getEpisodeLink(episodes)
+    fun getEpisodeLink(name: String, season: String, episode: Episode): List<Link> {
+        //return tvShows4Mobile.getEpisodeLink(episode)
+        //TODO before we could be able to devise how tvshows4mobile.com query its download link from raw link let just get it direct
+
+        val links = ArrayList<Link>()
+
+        links.add(getDownloadLinkDirect(name, season, episode.name , Link.GP3))
+        links.add(getDownloadLinkDirect(name, season, episode.name, Link.MP4))
+        links.add(getDownloadLinkDirect(name, season, episode.name, Link.HD))
+
+
+        return links
+    }
+
+    fun getDownloadLinkDirect(name: String, season: String, episode: String , linkType: Int): Link{
+        return Link(linkType, tvShows4Mobile.getDownloadLinkDirect(name, season, episode, if(linkType == Link.GP3) "3gp" else "mp4", if(linkType == Link.HD) true else false))
     }
 }

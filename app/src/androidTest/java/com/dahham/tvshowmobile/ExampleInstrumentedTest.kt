@@ -55,4 +55,27 @@ class ExampleInstrumentedTest {
 
         System.out.println(html)
     }
+
+    @Test
+    fun testDownloadLink(){
+        val tvShows4Mobile = TvShows4Mobile()
+
+        //"http://d12.tvshows4mobile.com/Silicon%20Valley/Season%2005/Silicon%20Valley%20-%20S05E05%20(TvShows4Mobile.Com).mp4"
+        val lastest_episodes = tvShows4Mobile.getLastestEpisodes()
+
+        tvShows4Mobile.getLastestEpisodesLinks(lastest_episodes.get(0))
+
+        val document = Jsoup.connect(lastest_episodes[0].link?.get(0)?.link).userAgent("mobile").data().post()
+        val loc = document.location()
+
+        System.out.println(loc)
+
+
+    }
+
+    fun downloadLink(){
+        val doc = Jsoup.connect("http://tvshows4mobile.com/areyouhuman.php?fid=48323").userAgent("Mozilla").post()
+
+        System.out.println(doc.location())
+    }
 }

@@ -130,7 +130,6 @@ class TvShows4Mobile {
         return getDownloadLink(episodes.link)
     }
 
-
     private var all_shows = Hashtable<String, String>()
 
     fun getLastestEpisodesLinks(vararg latest_episodes: LastestEpisode) {
@@ -172,6 +171,21 @@ class TvShows4Mobile {
         }
     }
 
+    fun getDownloadLinkDirect(name: String, season: String, episode: String, ext: String, isHD: Boolean = false): String{
+
+//        var _season = season
+//        var season_finale = ""
+//        if (season.contains("Season Finale")){
+//            _season = season.replace("Season Finale","", true)
+//            season_finale = "Season Finale"
+//        }
+
+        val url = "http://d${Random().nextInt(12)}.tvshows4mobile.com/$name/${season}}/$name - S${removeLetters(season)}E${removeLetters(episode)}%20${if(isHD) "HD%20" else ""}(TvShows4Mobile.Com).$ext"
+                .replace(" - Season Finale", "", true).replace(" ", "%20").trim()
+
+
+        return url
+    }
 
     private fun getDownloadLink(url: String): List<Link> {
         val html = getHtmlString(url)

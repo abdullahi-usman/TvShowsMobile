@@ -32,6 +32,7 @@
     <string name="share_using">Share Using</string>
     <string name="loading">Loading Please Wait...</string>
     <string name="please_wait">Please Wait...</string>
+    <string name="no_download_application">No application found to handle request</string>
     <string name="network_no_data">No data received from network</string>
     <string name="show_loaded_successfully">Shows loaded successfully</string>
     <string name="error_message">Error encountered while prcessing request</string>
