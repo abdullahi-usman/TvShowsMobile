@@ -6,8 +6,10 @@ import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v4.view.ViewCompat
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
+import com.crashlytics.android.Crashlytics
 import com.dahham.tvshowmobile.Models.Show
 import com.dahham.tvshowmobile.fragments.SeasonTabFragment
 import kotlinx.android.synthetic.main.activity_show_details.*
@@ -30,9 +32,15 @@ class ShowDetailsActivity : AppCompatActivity() {
 
         if (savedInstanceState != null) {
             show = savedInstanceState.getParcelable(DETAILS)
-        }else {
+        }else if (intent != null && intent.extras.containsKey(DETAILS)){
             ViewCompat.setTransitionName(details_poster, "poster")
             show = intent.getParcelableExtra(DETAILS)
+        } else {
+            // We should not run in this block when atleast when we do lets quit
+
+            Crashlytics.log(Log.ERROR, "dahham", "cannot reconstruct show with intent $intent and parcelable ${intent.getParcelableExtra(DETAILS) as? Show}")
+
+            finish()
         }
 
         loadItem()
