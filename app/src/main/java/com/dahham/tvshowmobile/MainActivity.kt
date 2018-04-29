@@ -20,7 +20,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main_drawer.*
 
 
-
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     var tvshow4mobile = TvShows4MobileFragment()
@@ -46,7 +45,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         switchFragments(tvshow4mobile, TVSHOWS4MOBILE_TAG)
 
         MobileAds.initialize(this, "ca-app-pub-5849046006048060~4044363744")
-
     }
 
     override fun onStart() {
@@ -77,7 +75,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         drawer_layout.closeDrawer(GravityCompat.START)
-        when(item.itemId){
+        when (item.itemId) {
             R.id.nav_share -> share()
             R.id.nav_send -> sendEmail()
             R.id.nav_developer -> developer()
@@ -87,44 +85,47 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    fun developer(){
+    fun developer() {
         val intent = Intent(Intent.ACTION_VIEW)
         intent.data = Uri.parse("http://play.google.com/store/apps/dev?id=6243316749639111813")
 
         launchIntent(intent)
     }
 
-    fun share(){
+    fun share() {
         val link = "http:/play.google.com/store/apps/details?id=com.dahham.tvshowsmobile"
         val intent = getShareIntent().setChooserTitle(R.string.share_using).setHtmlText(link).setText(link).setType("text/html").intent
 
         launchIntent(intent)
     }
-    fun sendEmail(){
+
+    fun sendEmail() {
         val intent = getShareIntent().setEmailTo(arrayOf("abdullahidhako@gmail.com")).setText("Hi Abdullahi").setChooserTitle("Send Email Using").setType("text/email").intent
 
         launchIntent(intent)
     }
-    fun getShareIntent(): ShareCompat.IntentBuilder{
+
+    fun getShareIntent(): ShareCompat.IntentBuilder {
         val intent = ShareCompat.IntentBuilder.from(this)
 
         return intent
     }
 
-    fun launchIntent(intent: Intent){
+    fun launchIntent(intent: Intent) {
         try {
             startActivity(intent)
-        }catch (e: ActivityNotFoundException){
+        } catch (e: ActivityNotFoundException) {
             Toast.makeText(this, R.string.can_perform_request, Toast.LENGTH_LONG).show()
         }
     }
+
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
         supportFragmentManager.putFragment(outState, TVSHOWS4MOBILE_TAG, tvshow4mobile)
     }
 
 
-    fun switchFragments(fragment: Fragment, tag: String){
+    fun switchFragments(fragment: Fragment, tag: String) {
         supportFragmentManager.beginTransaction().replace(R.id.fragment, fragment, tag).commit()
     }
 

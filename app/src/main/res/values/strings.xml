@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TV Show Mobile</string>
+    <string name="app_name">TV Shows Mobile</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_main2">Main2Activity</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -36,6 +36,10 @@
     <string name="network_no_data">No data received from network</string>
     <string name="show_loaded_successfully">Shows loaded successfully</string>
     <string name="error_message">Error encountered while prcessing request</string>
+    <string name="permission_granted">Permission granted, Please perform action again</string>
+    <string name="permission_denied">Sorry, cannot perform action. Please grant permission</string>
+    <string name="download">DOWNLOAD</string>
+
     <string name="show_description">"<b>STORY</b>\n %s \n\n Genre: %s \n\n <b>CASTS</b>\n %s"</string>
     <string name="show_added_date">Added On %s</string>
 

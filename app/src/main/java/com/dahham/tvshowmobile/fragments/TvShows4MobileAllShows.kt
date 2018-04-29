@@ -58,7 +58,19 @@ class TvShows4MobileAllShows: AbstractShowsFragment<Show>() {
         super.onViewCreated(view, savedInstanceState)
 
         if (recycler_shows_container.adapter == null) {
-            recycler_shows_container.layoutManager = GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false)
+            var layout_manager = GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false)
+
+            if (resources.displayMetrics.widthPixels >= 2560f){
+                layout_manager = GridLayoutManager(context, 6, GridLayoutManager.VERTICAL, false)
+            } else if (resources.displayMetrics.widthPixels >= 1920f){
+                layout_manager = GridLayoutManager(context, 5, GridLayoutManager.VERTICAL, false)
+            } else if (resources.displayMetrics.widthPixels >= 1280f){
+                layout_manager = GridLayoutManager(context, 4, GridLayoutManager.VERTICAL, false)
+            }else if (resources.displayMetrics.widthPixels >= 768f){
+                layout_manager = GridLayoutManager(context, 3, GridLayoutManager.VERTICAL, false)
+            }
+
+            recycler_shows_container.layoutManager = layout_manager
 
             recycler_shows_container.adapter = AllShowsAdapter()
         }
@@ -98,7 +110,7 @@ class TvShows4MobileAllShows: AbstractShowsFragment<Show>() {
             override fun onNext(item: Show, msg: String) {
                 if (item.poster != null || item.poster?.isEmpty() == false) {
                     val item_index = data.value!!.indexOf(item)
-                    recycler_shows_container.adapter.notifyItemChanged(item_index)
+                    recycler_shows_container.adapter?.notifyItemChanged(item_index)
                 }
             }
         }
@@ -170,6 +182,11 @@ class TvShows4MobileAllShows: AbstractShowsFragment<Show>() {
         if (userVisibleHint) {
             lifecycle.showViewModel.loadAllTVShows(this)
         }
+    }
+
+
+    override fun state(): TvShows4MobileViewModel.STATE {
+        return lifecycle.showViewModel.getState(TvShows4MobileViewModel.TYPE.ALL_TV_SHOWS)
     }
 
 

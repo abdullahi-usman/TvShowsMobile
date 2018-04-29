@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import com.dahham.tvshowmobile.Models.LastestEpisode
 import com.dahham.tvshowmobile.Models.Link
 import com.dahham.tvshowmobile.R
+import com.dahham.tvshowmobile.ViewModels.TvShows4MobileViewModel
 import kotlinx.android.synthetic.main.lastest_episode.view.*
 import kotlinx.android.synthetic.main.show_contents_container.*
 
@@ -37,12 +38,15 @@ class TvShows4MobileLastestEpisodes : AbstractShowsFragment<LastestEpisode>() {
                 lifecycle.showViewModel.lastestEpisodes.value = saved_latest_episodes.toList() as List<LastestEpisode>
             }
         }
+
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         if (recycler_shows_container.adapter == null) {
-            recycler_shows_container.layoutManager = LinearLayoutManager(context)
+            val layout_manager = LinearLayoutManager(context)
+
+            recycler_shows_container.layoutManager = layout_manager
             recycler_shows_container.adapter = LastestEpisodesAdapter()
         }
     }
@@ -55,6 +59,9 @@ class TvShows4MobileLastestEpisodes : AbstractShowsFragment<LastestEpisode>() {
         lifecycle.showViewModel.loadLastestEpisodes(this)
     }
 
+    override fun state(): TvShows4MobileViewModel.STATE {
+        return lifecycle.showViewModel.getState(TvShows4MobileViewModel.TYPE.LASTEST_TV_EPISODES)
+    }
 
     override fun getDownloadLink(episode: LastestEpisode): List<Link>? {
         lifecycle.showViewModel.getLastestEpisodesLinks(episode)

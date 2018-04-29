@@ -104,6 +104,7 @@ class TvShows4MobileViewModel : ViewModel() {
                     if (!e.tryOnError(except)){
                         break
                     }
+
                     continue
                 }
 
@@ -172,9 +173,11 @@ class TvShows4MobileViewModel : ViewModel() {
             setState(TYPE.ALL_TV_SHOWS, STATE.RUNNING)
 
             try {
-                for (show in tvShows4Mobile.getAllShows()) {
+
+                tvShows4Mobile.getAllShows().forEach { show ->
                     e.onNext(show)
                 }
+
             } catch (except: Exception) {
                 e.onError(except)
             }
@@ -211,9 +214,11 @@ class TvShows4MobileViewModel : ViewModel() {
             setState(TYPE.LASTEST_TV_EPISODES, STATE.RUNNING)
 
             try {
-                for (latest_episode in tvShows4Mobile.getLastestEpisodes()) {
+
+                tvShows4Mobile.getLastestEpisodes().forEach { latest_episode ->
                     e.onNext(latest_episode)
                 }
+
             } catch (except: Exception) {
                 e.onError(except)
             }
@@ -249,9 +254,10 @@ class TvShows4MobileViewModel : ViewModel() {
             setState(TYPE.EPISODE, STATE.RUNNING)
             try {
 
-                for (episode in tvShows4Mobile.getEpisodes(series)) {
+                tvShows4Mobile.getEpisodes(series).forEach { episode ->
                     e.onNext(episode)
                 }
+
             } catch (except: Exception) {
                 e.onError(except)
             }

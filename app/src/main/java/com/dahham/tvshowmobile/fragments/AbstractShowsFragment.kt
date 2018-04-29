@@ -1,14 +1,18 @@
 package com.dahham.tvshowmobile.fragments
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.DownloadManager
 import android.arch.lifecycle.LiveData
 import android.content.Context
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.AsyncTask
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.support.v4.app.Fragment
+import android.support.v4.content.ContextCompat.checkSelfPermission
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatDialog
 import android.view.LayoutInflater
@@ -64,7 +68,11 @@ abstract class AbstractShowsFragment<T>  : Fragment(), TvShows4MobileViewModel.S
     }
 
     override fun onError(throwable: Throwable) {
-        prepareErrorView(getString(R.string.error_message))
+
+        if (context != null) {
+            prepareErrorView(getString(R.string.error_message))
+        }
+
         throwable.printStackTrace()
     }
 
@@ -77,8 +85,9 @@ abstract class AbstractShowsFragment<T>  : Fragment(), TvShows4MobileViewModel.S
             }
         }
     }
+
     override fun onCompleted() {
-        if (data.value?.size == null || data.value?.size!! <= 0){
+        if (context != null && (data.value?.size == null || data.value?.size!! <= 0)){
             prepareErrorView(getString(R.string.network_no_data))
             return
         }
@@ -105,6 +114,11 @@ abstract class AbstractShowsFragment<T>  : Fragment(), TvShows4MobileViewModel.S
         if (data.value?.isEmpty() == false){
             prepareRecyclerView()
         } else {
+
+            if (error_button_switcher.currentView != error_reload_button && state() < TvShows4MobileViewModel.STATE.STARTED){
+                error_button_switcher.showNext()
+            }
+
             error_reload_button.setOnClickListener {
                 load()
             }
@@ -124,6 +138,18 @@ abstract class AbstractShowsFragment<T>  : Fragment(), TvShows4MobileViewModel.S
     }
 
     abstract fun load()
+    abstract fun state(): TvShows4MobileViewModel.STATE
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
+            Toast.makeText(context!!, R.string.permission_granted, Toast.LENGTH_LONG).show()
+        } else{
+            Toast.makeText(context!!, R.string.permission_denied, Toast.LENGTH_LONG).show()
+        }
+    }
+
 
     fun enqueue(name: String, season: String, episode: String, link: Link){
 
@@ -137,12 +163,16 @@ abstract class AbstractShowsFragment<T>  : Fragment(), TvShows4MobileViewModel.S
         request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MOVIES, "${name} - ${season} - ${episode}.${if(link.type == Link.GP3) "3gp" else "mp4"}")
         request.setVisibleInDownloadsUi(true)
         downloadManager?.enqueue(request)
-        downloadManager?.
     }
 
     abstract fun getDownloadLink(episode: T): List<Link>?
 
     fun download(name: String, season: String, episode: String, link: T ){
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(context!!, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 0)
+            return
+        }
 
         val downloadTask = @SuppressLint("StaticFieldLeak")
 

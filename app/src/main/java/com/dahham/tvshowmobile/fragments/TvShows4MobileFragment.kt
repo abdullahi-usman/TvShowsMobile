@@ -52,7 +52,7 @@ class TvShows4MobileFragment : Fragment() {
         adView.adListener = object : AdListener(){
             override fun onAdLoaded() {
                 super.onAdLoaded()
-                adView.visibility = View.VISIBLE
+                adView?.visibility = View.VISIBLE
             }
         }
     }

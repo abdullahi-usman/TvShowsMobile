@@ -33,6 +33,58 @@
                 app:layout_collapseMode="parallax"
                 app:srcCompat="@drawable/show_details_poster_background"
                 tools:alpha="0.5" />
+            <!--<android.support.design.widget.CoordinatorLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:background="@android:color/transparent"-->
+                <!--android:fitsSystemWindows="true"-->
+                <!--app:layout_collapseMode="parallax">-->
+
+                <!--<ImageView-->
+                    <!--android:id="@+id/shadow_play_poster_background"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:background="@android:color/transparent"-->
+                    <!--android:scaleType="center"-->
+                    <!--app:layout_anchor="@+id/fill_poster_background"-->
+                    <!--app:layout_anchorGravity="bottom|center_horizontal|center"-->
+                    <!--app:srcCompat="@drawable/shadow_play_poster_background" />-->
+
+                <!--<ImageView-->
+                    <!--android:id="@+id/play_poster_background"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:background="@android:color/transparent"-->
+                    <!--android:scaleType="center"-->
+                    <!--app:layout_anchor="@+id/fill_poster_background"-->
+                    <!--app:layout_anchorGravity="center_vertical|center_horizontal"-->
+                    <!--app:srcCompat="@drawable/play_poster_background" />-->
+
+                <!--<ImageView-->
+                    <!--android:id="@+id/left_video_tape"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_gravity="left"-->
+                    <!--android:foregroundGravity="left|right"-->
+                    <!--android:scaleType="fitStart"-->
+                    <!--app:srcCompat="@drawable/left_video_tape" />-->
+
+                <!--<ImageView-->
+                    <!--android:id="@+id/right_video_tape"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:scaleType="fitEnd"-->
+                    <!--app:layout_anchor="@+id/fill_poster_background"-->
+                    <!--app:layout_anchorGravity="right|center"-->
+                    <!--app:srcCompat="@drawable/right_video_tape" />-->
+
+                <!--<ImageView-->
+                    <!--android:id="@+id/fill_poster_background"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="match_parent"-->
+                    <!--android:scaleType="fitXY"-->
+                    <!--app:srcCompat="@drawable/fill_poster_background" />-->
+            <!--</android.support.design.widget.CoordinatorLayout>-->
 
             <android.support.v7.widget.AppCompatImageView
                 android:id="@+id/details_poster"

@@ -180,7 +180,7 @@ class TvShows4Mobile {
 //            season_finale = "Season Finale"
 //        }
 
-        val url = "http://d${Random().nextInt(12)}.tvshows4mobile.com/$name/${season}}/$name - S${removeLetters(season)}E${removeLetters(episode)}%20${if(isHD) "HD%20" else ""}(TvShows4Mobile.Com).$ext"
+        val url = "http://d${Random().nextInt(12)}.tvshows4mobile.com/$name/${season}/$name - S${removeLetters(season)}E${removeLetters(episode)}%20${if(isHD) "HD%20" else ""}(TvShows4Mobile.Com).$ext"
                 .replace(" - Season Finale", "", true).replace(" ", "%20").trim()
 
 

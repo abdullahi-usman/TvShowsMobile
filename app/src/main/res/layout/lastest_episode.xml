@@ -8,9 +8,12 @@
     android:layout_marginTop="8dp">
 
     <android.support.constraint.ConstraintLayout
-        android:layout_width="match_parent"
+        android:id="@+id/lastest_episode_container"
+        android:layout_width="345dp"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp">
+        android:layout_gravity="center"
+        android:layout_margin="8dp"
+        android:minWidth="245dp">
 
         <android.support.v7.widget.AppCompatTextView
             android:id="@+id/lastest_episode_name"
