@@ -286,25 +286,25 @@ class TvShows4MobileViewModel : ViewModel() {
         for (latest_episode in latest_episodes){
             val links = ArrayList<Link>()
 
-            links.add(getDownloadLinkDirect(latest_episode.name, latest_episode.season!!, latest_episode.episode!!, Link.GP3))
-            links.add(getDownloadLinkDirect(latest_episode.name, latest_episode.season, latest_episode.episode, Link.MP4))
-            links.add(getDownloadLinkDirect(latest_episode.name, latest_episode.season, latest_episode.episode, Link.HD))
+            links.add(getDownloadLinkDirect(latest_episode.show_name, latest_episode.season_name!!, latest_episode.episode_name!!, Link.GP3))
+            links.add(getDownloadLinkDirect(latest_episode.show_name, latest_episode.season_name, latest_episode.episode_name, Link.MP4))
+            links.add(getDownloadLinkDirect(latest_episode.show_name, latest_episode.season_name, latest_episode.episode_name, Link.HD))
 
-            latest_episode.link = links
+            latest_episode.download_links = links
             return
         }
 
     }
 
-    fun getEpisodeLink(name: String, season: String, episode: Episode): List<Link> {
+    fun getEpisodeLink(episode: Episode): List<Link> {
         //return tvShows4Mobile.getEpisodeLink(episode)
         //TODO before we could be able to devise how tvshows4mobile.com query its download link from raw link let just get it direct
 
         val links = ArrayList<Link>()
 
-        links.add(getDownloadLinkDirect(name, season, episode.name , Link.GP3))
-        links.add(getDownloadLinkDirect(name, season, episode.name, Link.MP4))
-        links.add(getDownloadLinkDirect(name, season, episode.name, Link.HD))
+        links.add(getDownloadLinkDirect(episode.show_name, episode.season_name!!, episode.episode_name!!, Link.GP3))
+        links.add(getDownloadLinkDirect(episode.show_name, episode.season_name, episode.episode_name, Link.MP4))
+        links.add(getDownloadLinkDirect(episode.show_name, episode.season_name, episode.episode_name, Link.HD))
 
 
         return links

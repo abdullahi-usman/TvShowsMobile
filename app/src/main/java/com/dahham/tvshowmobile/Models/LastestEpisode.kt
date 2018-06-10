@@ -9,7 +9,7 @@ import android.os.Parcelable
  *
  */
 
-class LastestEpisode (val name: String, val season: String? = null, val episode: String? = null, val rating: Float? = null, val runtime: Int? = null,  var poster: String? = null, val dateAdded: String? = null, var link: List<Link>? = null):
+class LastestEpisode (show_name: String, season_name: String? = null, episode_name: String? = null, val rating: Float? = null, val runtime: Int? = null,  var poster: String? = null, val dateAdded: String? = null, var download_links: List<Link>? = null): Episode(show_name, season_name, episode_name, ""),
 Parcelable{
 
     constructor(parcel: Parcel) : this(
@@ -23,23 +23,15 @@ Parcelable{
             parcel.createTypedArrayList(Link)) {
     }
 
-    override fun hashCode(): Int {
-        return name.hashCode() + (season?.hashCode() ?:0)  + (episode?.hashCode() ?:0)
-    }
-
-    override fun equals(other: Any?): Boolean {
-        return other is LastestEpisode && other.name == this.name
-    }
-
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(name)
-        parcel.writeString(season)
-        parcel.writeString(episode)
+        parcel.writeString(show_name)
+        parcel.writeString(season_name)
+        parcel.writeString(episode_name)
         parcel.writeValue(rating)
         parcel.writeValue(runtime)
         parcel.writeString(poster)
         parcel.writeString(dateAdded)
-        parcel.writeTypedList(link)
+        parcel.writeTypedList(download_links)
     }
 
     override fun describeContents(): Int {

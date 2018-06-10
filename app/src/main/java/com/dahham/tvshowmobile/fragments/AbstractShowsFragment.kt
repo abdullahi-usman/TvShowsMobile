@@ -2,15 +2,11 @@ package com.dahham.tvshowmobile.fragments
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.DownloadManager
 import android.arch.lifecycle.LiveData
-import android.content.Context
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat.checkSelfPermission
 import android.support.v7.app.AlertDialog
@@ -23,9 +19,11 @@ import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.dahham.tvshowmobile.LifeCycleObservers.TvShows4MobileLifeCycle
+import com.dahham.tvshowmobile.Models.Episode
 import com.dahham.tvshowmobile.Models.Link
 import com.dahham.tvshowmobile.R
 import com.dahham.tvshowmobile.ViewModels.TvShows4MobileViewModel
+import com.dahham.tvshowmobile.utils.DownloadStore
 import kotlinx.android.synthetic.main.show_contents_container.*
 
 
@@ -39,6 +37,8 @@ abstract class AbstractShowsFragment<T>  : Fragment(), TvShows4MobileViewModel.S
     lateinit var glide: RequestManager
     lateinit var lifecycle: TvShows4MobileLifeCycle<T>
     lateinit var data: LiveData<List<T>>
+    lateinit var downloadStore: DownloadStore
+    lateinit var downloaded_episodes: ArrayList<Episode>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,16 +47,19 @@ abstract class AbstractShowsFragment<T>  : Fragment(), TvShows4MobileViewModel.S
         lifecycle = TvShows4MobileLifeCycle(this)
         data = getLiveData()
         data.observe({this.getLifecycle()}, {recycler_shows_container.adapter.notifyDataSetChanged()})
+
+        downloadStore = DownloadStore.instnace(context!!)
+        downloaded_episodes = DownloadStore.getDownloadedEpisodes(context!!)
     }
 
     abstract fun getLiveData():LiveData<List<T>>;
 
     override fun onStarted() {
-        if (show_content_viewswitcher.currentView != error_container) {
+        if (show_content_viewswitcher?.currentView != error_container) {
             show_content_viewswitcher.showNext()
         }
 
-        if (error_button_switcher.currentView != error_reload_progressbar) {
+        if (error_button_switcher?.currentView != error_reload_progressbar) {
             error_button_switcher.showNext()
         }
 
@@ -101,7 +104,14 @@ abstract class AbstractShowsFragment<T>  : Fragment(), TvShows4MobileViewModel.S
         }
     }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.show_contents_container, container, false)
+
+        if (view == null) {
+            return inflater.inflate(R.layout.show_contents_container, container, false)
+        }else{
+            return super.onCreateView(inflater, container, savedInstanceState)
+        }
+
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -150,24 +160,9 @@ abstract class AbstractShowsFragment<T>  : Fragment(), TvShows4MobileViewModel.S
         }
     }
 
+    abstract fun getDownloadLink(episode: Episode): List<Link>?
 
-    fun enqueue(name: String, season: String, episode: String, link: Link){
-
-        val downloadManager = context?.getSystemService(Context.DOWNLOAD_SERVICE) as? DownloadManager
-
-        val request = DownloadManager.Request(Uri.parse(link.link))
-        request.allowScanningByMediaScanner()
-        request.setTitle(name)
-        request.setDescription("${season} ${episode}")
-        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MOVIES, "${name} - ${season} - ${episode}.${if(link.type == Link.GP3) "3gp" else "mp4"}")
-        request.setVisibleInDownloadsUi(true)
-        downloadManager?.enqueue(request)
-    }
-
-    abstract fun getDownloadLink(episode: T): List<Link>?
-
-    fun download(name: String, season: String, episode: String, link: T ){
+    fun download(episode: Episode){
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(context!!, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 0)
@@ -187,7 +182,7 @@ abstract class AbstractShowsFragment<T>  : Fragment(), TvShows4MobileViewModel.S
 
             override fun doInBackground(vararg params: Void?): List<Link>? {
                 try {
-                    return getDownloadLink(link)
+                    return getDownloadLink(episode)
                 }catch (e: Exception){
                     return null
                 }
@@ -212,9 +207,9 @@ abstract class AbstractShowsFragment<T>  : Fragment(), TvShows4MobileViewModel.S
                     dialog.dismiss()
 
                     when (position) {
-                        0 -> links.forEach { if (it.type == Link.GP3) enqueue(name, season, episode, it)  }
-                        1 -> links.forEach { if (it.type == Link.MP4) enqueue(name, season, episode, it)  }
-                        2 -> links.forEach { if (it.type == Link.HD) enqueue(name, season, episode, it)  }
+                        0 -> links.forEach { if (it.type == Link.GP3) downloadStore.enqueue(episode, it)  }
+                        1 -> links.forEach { if (it.type == Link.MP4) downloadStore.enqueue(episode, it)  }
+                        2 -> links.forEach { if (it.type == Link.HD) downloadStore.enqueue(episode, it)  }
                     }
                 }
 

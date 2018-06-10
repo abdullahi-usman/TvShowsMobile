@@ -9,19 +9,51 @@ import android.os.Parcelable
  *
  */
 
-class Episode(val name: String, val link: String): Parcelable{
+open class Episode(val show_name: String, val season_name: String? = null, val episode_name: String? = null, var link: String? = null): Parcelable, Comparable<Episode>{
     constructor(parcel: Parcel) : this(
+            parcel.readString(),
+            parcel.readString(),
             parcel.readString(),
             parcel.readString()) {
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(name)
+        parcel.writeString(show_name)
+        parcel.writeString(season_name)
+        parcel.writeString(episode_name)
         parcel.writeString(link)
     }
 
     override fun describeContents(): Int {
         return 0
+    }
+
+    override fun compareTo(other: Episode): Int {
+        var status: Int
+        status = other.show_name.compareTo(show_name, true)
+
+        if (status != 0) return status
+
+        if (season_name != null) {
+            status = other.season_name?.compareTo(season_name, true)!!
+
+            if (status != 0) return status
+        }
+
+        if (episode_name != null) {
+            status = other.episode_name?.compareTo(episode_name, true)!!
+        }
+
+        return status
+    }
+    override fun hashCode(): Int {
+        return (show_name + season_name + episode_name).hashCode()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return other is Episode && other.show_name.matches(Regex(this.show_name)) == true
+                && this.season_name != null && other.season_name?.matches(Regex(this.season_name)) == true
+                && this.episode_name != null && other.episode_name?.matches(Regex(this.episode_name)) == true
     }
 
     companion object CREATOR : Parcelable.Creator<Episode> {
@@ -35,9 +67,10 @@ class Episode(val name: String, val link: String): Parcelable{
     }
 }
 
-class Series(val season: String, var episodes: List<Episode>? = null, val link: String?): Parcelable{
+class Series(val show_name: String, val season: String, var episodes: List<Episode>? = null, val link: String?): Parcelable{
 
     constructor(parcel: Parcel) : this(
+            parcel.readString(),
             parcel.readString(),
             parcel.createTypedArrayList(Episode),
             parcel.readString()) {
@@ -45,6 +78,7 @@ class Series(val season: String, var episodes: List<Episode>? = null, val link: 
     }
 
     override fun writeToParcel(dest: Parcel?, flags: Int) {
+        dest?.writeString(show_name)
         dest?.writeString(season)
         dest?.writeTypedList(episodes)
         dest?.writeString(link)
@@ -92,7 +126,7 @@ class Show(val name: String, var description: String? = null, var casts: List<St
     }
 
     override fun equals(other: Any?): Boolean {
-        return other is Show && other.name == this.name
+        return other is Show && other.name.matches(Regex(this.name))
     }
 
     override fun writeToParcel(dest: Parcel?, flags: Int) {

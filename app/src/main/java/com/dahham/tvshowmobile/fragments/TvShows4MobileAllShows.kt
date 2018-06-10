@@ -15,6 +15,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.dahham.tvshowmobile.Models.Episode
 import com.dahham.tvshowmobile.Models.Link
 import com.dahham.tvshowmobile.Models.Show
 import com.dahham.tvshowmobile.R
@@ -54,6 +55,8 @@ class TvShows4MobileAllShows: AbstractShowsFragment<Show>() {
     fun getDownloadPath(): String?{
         return context?.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath
     }
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -79,7 +82,7 @@ class TvShows4MobileAllShows: AbstractShowsFragment<Show>() {
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
         super.setUserVisibleHint(isVisibleToUser)
 
-        if (isVisibleToUser) {
+        if (isVisibleToUser && isAdded) {
             onStart()
         }
     }
@@ -89,7 +92,7 @@ class TvShows4MobileAllShows: AbstractShowsFragment<Show>() {
         outState.putParcelableArray(SHOWS, data.value?.toTypedArray())
     }
 
-    override fun getDownloadLink(episode: Show): List<Link>? {
+    override fun getDownloadLink(episode: Episode): List<Link>? {
         return null
     }
 

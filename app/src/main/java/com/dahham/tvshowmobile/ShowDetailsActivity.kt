@@ -1,6 +1,7 @@
 package com.dahham.tvshowmobile
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
@@ -32,7 +33,7 @@ class ShowDetailsActivity : AppCompatActivity() {
 
         if (savedInstanceState != null) {
             show = savedInstanceState.getParcelable(DETAILS)
-        }else if (intent != null && intent.extras.containsKey(DETAILS)){
+        } else if (intent != null && intent.extras.containsKey(DETAILS)) {
             ViewCompat.setTransitionName(details_poster, "poster")
             show = intent.getParcelableExtra(DETAILS)
         } else {
@@ -67,8 +68,8 @@ class ShowDetailsActivity : AppCompatActivity() {
 
         val genres = StringBuilder()
 
-        if (show.genre != null){
-            for (genre in show.genre!!){
+        if (show.genre != null) {
+            for (genre in show.genre!!) {
                 genres.append("$genre  ")
             }
         }
@@ -80,31 +81,14 @@ class ShowDetailsActivity : AppCompatActivity() {
         views.text = show.views.toString()
         runtime.text = show.runtime
 
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//            window.sharedElementEnterTransition.addListener(object : Transition.TransitionListener {
-//                override fun onTransitionEnd(transition: Transition?) {
-//                    loadPoster()
-//                }
-//
-//                override fun onTransitionResume(transition: Transition?) {}
-//
-//                override fun onTransitionPause(transition: Transition?) {}
-//
-//                override fun onTransitionCancel(transition: Transition?) {}
-//
-//                override fun onTransitionStart(transition: Transition?) {}
-//
-//            })
-//        } else {
-            loadPoster()
-//        }
+        loadPoster()
     }
 
     fun loadPoster() {
         glide.load(show.poster).into(details_poster)
     }
 
-    private inner class SeasonTab(fragmentManager: FragmentManager): FragmentStatePagerAdapter(fragmentManager){
+    private inner class SeasonTab(fragmentManager: FragmentManager) : FragmentStatePagerAdapter(fragmentManager) {
 
         var fragments = ArrayList<SeasonTabFragment>()
 
@@ -121,7 +105,6 @@ class ShowDetailsActivity : AppCompatActivity() {
                 fragment.arguments?.putParcelable(SeasonTabFragment.SEASON, show.series?.get(position))
 
                 fragments.add(fragment)
-                return fragment
             }
 
             return fragments[position]
@@ -131,31 +114,27 @@ class ShowDetailsActivity : AppCompatActivity() {
             return "${show.series?.get(position)?.season}"
         }
 
-//        override fun saveState(): Parcelable? {
-//            val bundle = Bundle()
-//
-//            fragments.forEach {
-//                val _bundle = Bundle()
-//                _bundle.putString(SeasonTabFragment.SHOW_NAME, it.show_name)
-//                _bundle.putParcelable(SeasonTabFragment.SEASON, it.series)
-//                bundle.putBundle(fragments.indexOf(it).toString(), _bundle)
-//            }
-//
-//            bundle.putInt("fragment_count", fragments.size)
-//            return bundle
-//        }
-//
-//        override fun restoreState(state: Parcelable?, loader: ClassLoader?) {
-//            super.restoreState(state, loader)
-//
-//            val bundle = state as Bundle
-//
-//            for (i in 0..bundle.getInt("fragment_count")){
-//                val fragment = SeasonTabFragment()
-//                fragment.arguments = bundle.getBundle(i.toString())
-//
-//                fragments.add(fragment)
-//            }
-//        }
+        override fun saveState(): Parcelable? {
+            val bundle = Bundle()
+
+            fragments.forEach {
+                supportFragmentManager.putFragment(bundle, fragments.indexOf(it).toString(), it)
+            }
+
+            bundle.putInt("count", fragments.size)
+            return bundle
+        }
+
+        override fun restoreState(state: Parcelable?, loader: ClassLoader?) {
+            super.restoreState(state, loader)
+
+            val bundle = state as Bundle
+
+            for (i in 0..bundle.getInt("count")){
+                val fragment = supportFragmentManager.getFragment(bundle, i.toString()) as SeasonTabFragment
+
+                fragments.add(fragment)
+            }
+        }
     }
 }

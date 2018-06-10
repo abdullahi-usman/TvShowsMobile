@@ -31,7 +31,7 @@ class TvShows4Mobile {
 
             getDataList(html) { name, link ->
 
-                val episode = Episode(name = name, link = link)
+                val episode = Episode(show_name = series.show_name, season_name = series.season, episode_name = name,  link = link)
 
                 episodes.add(episode)
             }
@@ -62,7 +62,7 @@ class TvShows4Mobile {
                 if (child_element.`is`("div[class=\"data main\"]")) {
                     val splits = child_element.text().split("-")
 
-                    val lastest_episode = LastestEpisode(name = splits[0].trim(), season = splits[1].trim(), episode = if (splits.size > 4) (splits[2] + "-" + splits[3]).trim() else splits[2].trim(), dateAdded = formatDate(splits[splits.size - 1]))
+                    val lastest_episode = LastestEpisode(show_name = splits[0].trim(), season_name = splits[1].trim(), episode_name = if (splits.size > 4) (splits[2] + "-" + splits[3]).trim() else splits[2].trim(), dateAdded = formatDate(splits[splits.size - 1]))
 
                     latest_episodes.add(lastest_episode)
                 }
@@ -115,7 +115,7 @@ class TvShows4Mobile {
         val series = ArrayList<Series>()
 
         getDataList(jsoup.toString()) { name, link ->
-            val serie = Series(season = name, link = link)
+            val serie = Series(show_name = show.name, season = name, link = link)
 
             series.add(serie)
         }
@@ -127,7 +127,7 @@ class TvShows4Mobile {
     }
 
     fun getEpisodeLink(episodes: Episode): List<Link> {
-        return getDownloadLink(episodes.link)
+        return getDownloadLink(episodes.link!!)
     }
 
     private var all_shows = Hashtable<String, String>()
@@ -143,9 +143,9 @@ class TvShows4Mobile {
 
         for (latest_episode in latest_episodes) {
 
-            if (all_shows.containsKey(latest_episode.name)) {
+            if (all_shows.containsKey(latest_episode.show_name)) {
 
-                val _show = Show(name = latest_episode.name, link = all_shows[latest_episode.name])
+                val _show = Show(name = latest_episode.show_name, link = all_shows[latest_episode.show_name])
                 getShowProperties(_show)
 
                 latest_episode.poster = _show.poster
@@ -154,15 +154,15 @@ class TvShows4Mobile {
 
                     for (_serie in _show.series!!) {
 
-                        if (_serie.season == latest_episode.season) {
+                        if (_serie.season == latest_episode.season_name) {
 
                             val html = getHtmlString(_serie.link!!)
 
                             val all_episodes = getDataList(html, null)
 
-                            if (all_episodes.containsKey(latest_episode.episode)) {
+                            if (all_episodes.containsKey(latest_episode.episode_name)) {
 
-                                latest_episode.link = getDownloadLink(all_episodes[latest_episode.episode]!!)
+                                latest_episode.download_links = getDownloadLink(all_episodes[latest_episode.episode_name]!!)
                             }
                         }
                     }

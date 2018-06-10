@@ -96,14 +96,14 @@
 
 
             <android.support.v7.widget.AppCompatImageView
-            android:id="@+id/lastest_episode_download"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:padding="8dp"
-            android:scaleType="fitXY"
-            android:layout_gravity="center"
-            app:srcCompat="@drawable/ic_file_download_black_24dp" />
+                android:id="@+id/lastest_episode_download"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:padding="8dp"
+                android:scaleType="fitXY"
+                android:layout_gravity="center"
+                app:srcCompat="@drawable/ic_file_download_black_24dp" />
 
 
             <ProgressBar

@@ -18,9 +18,9 @@
     <string name="tvmdb_category_tvshows">ALL TV SHOWS</string>
 
     <!-- Navigation menu -->
-    <string name="nav_source_title">Sources</string>
+    <string name="nav_source_title">Navigation</string>
     <string name="nav_source_tmdb">Tmdb</string>
-    <string name="nav_source_tvshows4mobile">TV Shows Mobile</string>
+    <string name="nav_source_tvshows4mobile">TV Shows</string>
 
 
     <string name="nav_menu_help">Help</string>
@@ -38,7 +38,7 @@
     <string name="error_message">Error encountered while prcessing request</string>
     <string name="permission_granted">Permission granted, Please perform action again</string>
     <string name="permission_denied">Sorry, cannot perform action. Please grant permission</string>
-    <string name="download">DOWNLOAD</string>
+    <string name="download">Downloads</string>
 
     <string name="show_description">"<b>STORY</b>\n %s \n\n Genre: %s \n\n <b>CASTS</b>\n %s"</string>
     <string name="show_added_date">Added On %s</string>
@@ -49,4 +49,9 @@
         <item>HD</item>
     </string-array>
 
+    <string name="download_ids">DOWNLOAD_IDS</string>
+    <string name="downloading">Downloading</string>
+    <string name="play">Play</string>
+    <string name="no_downloads_available">No Downloads Available</string>
+    <string name="clear">Clear</string>
 </resources>

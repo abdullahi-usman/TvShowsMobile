@@ -3,18 +3,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <!--<item android:title="@string/nav_source_title">-->
-        <!--<menu android:checkableBehavior="single">-->
-            <!--<item-->
-                <!--android:id="@+id/nav_source_tmdb"-->
-                <!--android:icon="@drawable/ic_menu_camera"-->
-                <!--android:title="@string/nav_source_tmdb" />-->
-            <!--<item-->
-                <!--android:id="@+id/nav_source_tvshows4mobile"-->
-                <!--android:icon="@drawable/ic_menu_gallery"-->
-                <!--android:title="@string/nav_source_tvshows4mobile" />-->
-        <!--</menu>-->
-    <!--</item>-->
+    <item android:title="@string/nav_source_title">
+        <menu android:checkableBehavior="single">
+            <item
+                android:id="@+id/nav_tvshows4mobile"
+                android:icon="@drawable/ic_tvshows4mobile_black_24dp"
+                android:title="@string/nav_source_tvshows4mobile" />
+
+            <item android:id="@+id/nav_downloads"
+                android:icon="@drawable/ic_file_download_black_24dp"
+                android:title="@string/download" />
+        </menu>
+    </item>
 
     <item android:title="@string/nav_menu_help">
         <menu>

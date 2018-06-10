@@ -2,7 +2,6 @@ package com.dahham.tvshowmobile.views
 
 import android.content.Context
 import android.support.v4.view.ViewPager
-import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
 import android.view.View
 
@@ -27,7 +26,6 @@ class NestedViewPager : ViewPager {
         if (widthSize < minimumWidth || heightSize < suggestedMinimumWidth){
             widthSize = Math.max(minimumWidth, suggestedMinimumWidth)
         }
-
 
         super.onMeasure(View.MeasureSpec.makeMeasureSpec(widthSize, MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(widthSize, MeasureSpec.AT_MOST))
     }

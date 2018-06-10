@@ -12,10 +12,8 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import android.widget.Toast
-import com.crashlytics.android.Crashlytics
+import com.dahham.tvshowmobile.fragments.DownloadsFragment
 import com.dahham.tvshowmobile.fragments.TvShows4MobileFragment
-import com.google.android.gms.ads.MobileAds
-import io.fabric.sdk.android.Fabric
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main_drawer.*
 
@@ -23,16 +21,23 @@ import kotlinx.android.synthetic.main.activity_main_drawer.*
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     var tvshow4mobile = TvShows4MobileFragment()
-    val TVSHOWS4MOBILE_TAG = "tvshow4mobile";
+    var downloads = DownloadsFragment()
+
+    val TVSHOWS4MOBILE_TAG = "tvshow4mobile"
+    val DOWNLOADS_FRAGMENT_TAG = "downloads_fragment"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Fabric.with(this, Crashlytics())
+        //Fabric.with(this, Crashlytics())
         setContentView(R.layout.activity_main_drawer)
         setSupportActionBar(toolbar)
 
         if (savedInstanceState?.containsKey(TVSHOWS4MOBILE_TAG) == true) {
             tvshow4mobile = supportFragmentManager.getFragment(savedInstanceState, TVSHOWS4MOBILE_TAG) as TvShows4MobileFragment
+        }
+
+        if (savedInstanceState?.containsKey(DOWNLOADS_FRAGMENT_TAG) == true){
+            downloads = supportFragmentManager.getFragment(savedInstanceState, DOWNLOADS_FRAGMENT_TAG) as DownloadsFragment
         }
 
         val toggler = ActionBarDrawerToggle(this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -42,9 +47,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         drawer_layout.addDrawerListener(toggler)
         nav_menu.setNavigationItemSelectedListener(this)
 
-        switchFragments(tvshow4mobile, TVSHOWS4MOBILE_TAG)
+        if (supportFragmentManager.fragments.contains(tvshow4mobile).not()) {
+            tvshows4mobile_fragment()
+        }
 
-        MobileAds.initialize(this, "ca-app-pub-5849046006048060~4044363744")
+        //MobileAds.initialize(this, "ca-app-pub-5849046006048060~4044363744")
     }
 
     override fun onStart() {
@@ -79,10 +86,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_share -> share()
             R.id.nav_send -> sendEmail()
             R.id.nav_developer -> developer()
-
+            R.id.nav_downloads -> downloads_fragment()
+            R.id.nav_tvshows4mobile -> tvshows4mobile_fragment()
         }
 
         return true
+    }
+    fun tvshows4mobile_fragment(){
+        switchFragments(tvshow4mobile, TVSHOWS4MOBILE_TAG)
+    }
+
+    fun downloads_fragment(){
+        switchFragments(downloads, DOWNLOADS_FRAGMENT_TAG)
     }
 
     fun developer() {
@@ -121,9 +136,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
-        supportFragmentManager.putFragment(outState, TVSHOWS4MOBILE_TAG, tvshow4mobile)
-    }
+        if (supportFragmentManager.fragments.contains(tvshow4mobile)) {
+            supportFragmentManager.putFragment(outState, TVSHOWS4MOBILE_TAG, tvshow4mobile)
+        }
 
+        if (supportFragmentManager.fragments.contains(downloads)) {
+            supportFragmentManager.putFragment(outState, DOWNLOADS_FRAGMENT_TAG, downloads)
+        }
+    }
 
     fun switchFragments(fragment: Fragment, tag: String) {
         supportFragmentManager.beginTransaction().replace(R.id.fragment, fragment, tag).commit()
