@@ -229,7 +229,6 @@ class DownloadStore private constructor() {
         return downloading_shows.get(episode) ?: -1L
     }
 
-
     @SuppressLint("ApplySharedPref")
     fun enqueue(episode: Episode, link: Link) {
 

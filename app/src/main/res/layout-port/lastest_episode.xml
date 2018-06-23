@@ -9,7 +9,7 @@
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/lastest_episode_container"
-        android:layout_width="345dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_margin="8dp"
