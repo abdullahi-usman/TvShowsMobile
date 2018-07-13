@@ -1,10 +1,6 @@
 package com.dahham.tvshowmobile.fragments
 
-import android.app.DownloadManager
 import android.arch.lifecycle.LiveData
-import android.content.ActivityNotFoundException
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -18,9 +14,7 @@ import com.dahham.tvshowmobile.R
 import com.dahham.tvshowmobile.ViewModels.TvShows4MobileViewModel
 import com.dahham.tvshowmobile.utils.DownloadStore
 import kotlinx.android.synthetic.main.episode.view.*
-import kotlinx.android.synthetic.main.lastest_episode.view.*
 import kotlinx.android.synthetic.main.show_contents_container.*
-import java.io.File
 
 /**
  * Created by dahham on 4/16/18.
@@ -104,91 +98,17 @@ class SeasonTabFragment : AbstractShowsFragment<Episode>() {
             val episode = series.episodes?.get(position)
 
             holder.episode = episode
+
             holder._itemView.episode_name.text = episode?.episode_name
 
             holder._itemView.episode_download_status.text = getString(R.string.download)
 
-            fun registerDownloadListener(episode: Episode) {
-                //if (downloadStore.hasRegisteredListener(episode)) return
+//            holder._itemView.episode_download.setOnClickListener {}
 
-                downloadStore.registerOnDownloadChanged(episode, object : DownloadStore.DownloadStoreListener {
-                    override fun onDownloadStateChanged(episode: Episode, status: Int) {
-
-                        var episode_holder: ViewHolder? = null
-                        for (pos in 0..recycler_shows_container.childCount){
-
-                            val view_child = recycler_shows_container.getChildAt(pos) ?: continue
-
-                            val _holder = (recycler_shows_container.getChildViewHolder(view_child) as ViewHolder)
-                            if (_holder.episode?.equals(episode) == true){
-                                episode_holder = _holder
-                            }
-
-                        }
-
-                        if (episode_holder == null) return
-
-                        //if (episode_holder.episode?.equals(episode) == true) {
-                            if (status == DownloadManager.STATUS_RUNNING || status == DownloadManager.STATUS_PENDING || status == DownloadManager.STATUS_PAUSED) {
-                                change_download_icon(episode_holder, R.id.episode_progressbar)
-                                episode_holder._itemView.episode_download_status.text = getString(R.string.downloading)
-                            } else if (status == DownloadManager.STATUS_SUCCESSFUL) {
-                                change_download_icon(episode_holder, R.id.episode_play)
-                                holder._itemView.episode_download_status.text = getString(R.string.play)
-                                holder._itemView.episode_download_container.setOnClickListener {
-
-                                    val downloaded_episode = downloadStore.getDownloadedFile(episode)
-                                            ?: return@setOnClickListener
-
-                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(downloaded_episode))
-
-                                    try {
-                                        startActivity(intent)
-                                    } catch (e: ActivityNotFoundException) {
-                                    }
-
-                                }
-
-                            } else if (status == DownloadManager.STATUS_FAILED || status == -1) {
-                                change_download_icon(episode_holder, R.id.episode_download)
-                            }
-                        //}
-
-                    }
-                })
-
-            }
-
-            val downloaded_index = downloaded_episodes.indexOf(episode)
-            val download_id = downloadStore.getDownloadIdForEpisode(episode!!)
-
-            if (download_id != -1L) {
-                registerDownloadListener(episode)
-                downloadStore.postDownloadStatus(episode, download_id)
-            } else if (downloaded_index != -1 && File(downloaded_episodes[downloaded_index].link).exists()) {
-
-                change_download_icon(holder, R.id.episode_play)
-
-                holder._itemView.lastest_episode_play.setOnClickListener {
-
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(downloaded_episodes[downloaded_index].link))
-
-                    try {
-                        startActivity(intent)
-                    } catch (e: ActivityNotFoundException) {
-                    }
-
+            holder._itemView.episode_container.setOnClickListener {
+                if (episode != null) {
+                    download(holder.episode!!)
                 }
-
-
-            } else {
-                change_download_icon(holder, R.id.episode_download)
-            }
-
-            holder._itemView.episode_download.setOnClickListener {
-                registerDownloadListener(episode)
-
-                download(episode)
             }
 
         }

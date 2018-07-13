@@ -3,7 +3,10 @@ package com.dahham.tvshowmobile.fragments
 import android.Manifest
 import android.annotation.SuppressLint
 import android.arch.lifecycle.LiveData
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
@@ -23,7 +26,6 @@ import com.dahham.tvshowmobile.Models.Episode
 import com.dahham.tvshowmobile.Models.Link
 import com.dahham.tvshowmobile.R
 import com.dahham.tvshowmobile.ViewModels.TvShows4MobileViewModel
-import com.dahham.tvshowmobile.utils.DownloadStore
 import kotlinx.android.synthetic.main.show_contents_container.*
 
 
@@ -37,8 +39,7 @@ abstract class AbstractShowsFragment<T>  : Fragment(), TvShows4MobileViewModel.S
     lateinit var glide: RequestManager
     lateinit var lifecycle: TvShows4MobileLifeCycle<T>
     lateinit var data: LiveData<List<T>>
-    lateinit var downloadStore: DownloadStore
-    lateinit var downloaded_episodes: ArrayList<Episode>
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,9 +48,6 @@ abstract class AbstractShowsFragment<T>  : Fragment(), TvShows4MobileViewModel.S
         lifecycle = TvShows4MobileLifeCycle(this)
         data = getLiveData()
         data.observe({this.getLifecycle()}, {recycler_shows_container.adapter.notifyDataSetChanged()})
-
-        downloadStore = DownloadStore.instnace(context!!)
-        downloaded_episodes = DownloadStore.getDownloadedEpisodes(context!!)
     }
 
     abstract fun getLiveData():LiveData<List<T>>;
@@ -95,7 +93,6 @@ abstract class AbstractShowsFragment<T>  : Fragment(), TvShows4MobileViewModel.S
             return
         }
 
-//        Toast.makeText(context, R.string.show_loaded_successfully, Toast.LENGTH_LONG).show()
     }
 
     fun prepareRecyclerView(){
@@ -207,13 +204,22 @@ abstract class AbstractShowsFragment<T>  : Fragment(), TvShows4MobileViewModel.S
                     dialog.dismiss()
 
                     when (position) {
-                        0 -> links.forEach { if (it.type == Link.GP3) downloadStore.enqueue(episode, it)  }
-                        1 -> links.forEach { if (it.type == Link.MP4) downloadStore.enqueue(episode, it)  }
-                        2 -> links.forEach { if (it.type == Link.HD) downloadStore.enqueue(episode, it)  }
+                        0 -> links.forEach { if (it.type == Link.GP3) enqueue(episode, it)  }
+                        1 -> links.forEach { if (it.type == Link.MP4) enqueue(episode, it)  }
+                        2 -> links.forEach { if (it.type == Link.HD) enqueue(episode, it)  }
                     }
                 }
 
                 dialog.show()
+            }
+
+            fun enqueue(episode: Episode, link: Link){
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link.link));
+                try {
+                    startActivity(intent)
+                }catch (ex: ActivityNotFoundException){
+                    ex.printStackTrace()
+                }
             }
 
             override fun onCancelled(result: List<Link>?) {
