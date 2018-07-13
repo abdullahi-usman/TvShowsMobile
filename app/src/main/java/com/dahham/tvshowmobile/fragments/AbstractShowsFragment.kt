@@ -34,7 +34,7 @@ import kotlinx.android.synthetic.main.show_contents_container.*
  * This file is part of TVShowMobile licensed under GNU Public License
  *
  */
-abstract class AbstractShowsFragment<T>  : Fragment(), TvShows4MobileViewModel.ShowsViewModelListener<T> {
+abstract class AbstractShowsFragment<T> : Fragment(), TvShows4MobileViewModel.ShowsViewModelListener<T> {
 
     lateinit var glide: RequestManager
     lateinit var lifecycle: TvShows4MobileLifeCycle<T>
@@ -47,10 +47,10 @@ abstract class AbstractShowsFragment<T>  : Fragment(), TvShows4MobileViewModel.S
         glide = Glide.with(context!!)
         lifecycle = TvShows4MobileLifeCycle(this)
         data = getLiveData()
-        data.observe({this.getLifecycle()}, {recycler_shows_container.adapter.notifyDataSetChanged()})
+        data.observe({ this.getLifecycle() }, { recycler_shows_container.adapter.notifyDataSetChanged() })
     }
 
-    abstract fun getLiveData():LiveData<List<T>>;
+    abstract fun getLiveData(): LiveData<List<T>>;
 
     override fun onStarted() {
         if (show_content_viewswitcher?.currentView != error_container) {
@@ -65,49 +65,51 @@ abstract class AbstractShowsFragment<T>  : Fragment(), TvShows4MobileViewModel.S
     }
 
     override fun onNext(item: T, msg: String) {
-       prepareRecyclerView()
+        prepareRecyclerView()
     }
 
     override fun onError(throwable: Throwable) {
-
-        if (context != null) {
-            prepareErrorView(getString(R.string.error_message))
-        }
+        prepareErrorView(getString(R.string.error_message))
 
         throwable.printStackTrace()
     }
 
-    fun prepareErrorView(message: String){
-        if (show_content_viewswitcher != null && show_content_viewswitcher.currentView == error_container){
-            empty_text?.text = message
-
-            if (error_button_switcher.currentView != error_reload_button) {
-                error_button_switcher.showNext()
-            }
+    fun prepareErrorView(message: String) {
+        if (show_content_viewswitcher?.currentView != error_container){
+            show_content_viewswitcher.showNext();
         }
+
+        if (error_button_switcher?.currentView != error_reload_button) {
+            error_button_switcher.showNext()
+        }
+
+        error_reload_button.setOnClickListener {
+            load()
+        }
+
+        empty_text?.text = message
     }
 
     override fun onCompleted() {
-        if (context != null && (data.value?.size == null || data.value?.size!! <= 0)){
+        if (data.value?.size == null || data.value?.size!! <= 0) {
             prepareErrorView(getString(R.string.network_no_data))
-            return
         }
 
     }
 
-    fun prepareRecyclerView(){
-        if (show_content_viewswitcher != null && show_content_viewswitcher.currentView == error_container){
+    fun prepareRecyclerView() {
+        if (show_content_viewswitcher != null && show_content_viewswitcher.currentView == error_container) {
             show_content_viewswitcher.showNext()
         }
     }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         if (view == null) {
             return inflater.inflate(R.layout.show_contents_container, container, false)
-        }else{
+        } else {
             return super.onCreateView(inflater, container, savedInstanceState)
         }
-
 
     }
 
@@ -118,11 +120,11 @@ abstract class AbstractShowsFragment<T>  : Fragment(), TvShows4MobileViewModel.S
             empty_text?.text = savedInstanceState.getString("empty_msg")
         }
 
-        if (data.value?.isEmpty() == false){
+        if (data.value?.isEmpty() == false) {
             prepareRecyclerView()
         } else {
 
-            if (error_button_switcher.currentView != error_reload_button && state() < TvShows4MobileViewModel.STATE.STARTED){
+            if (error_button_switcher.currentView != error_reload_button && state() < TvShows4MobileViewModel.STATE.STARTED) {
                 error_button_switcher.showNext()
             }
 
@@ -150,16 +152,16 @@ abstract class AbstractShowsFragment<T>  : Fragment(), TvShows4MobileViewModel.S
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-        if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
+        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(context!!, R.string.permission_granted, Toast.LENGTH_LONG).show()
-        } else{
+        } else {
             Toast.makeText(context!!, R.string.permission_denied, Toast.LENGTH_LONG).show()
         }
     }
 
     abstract fun getDownloadLink(episode: Episode): List<Link>?
 
-    fun download(episode: Episode){
+    fun download(episode: Episode) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(context!!, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 0)
@@ -168,7 +170,7 @@ abstract class AbstractShowsFragment<T>  : Fragment(), TvShows4MobileViewModel.S
 
         val downloadTask = @SuppressLint("StaticFieldLeak")
 
-        object : AsyncTask<Void, Void, List<Link>>(){
+        object : AsyncTask<Void, Void, List<Link>>() {
             lateinit var progressDialog: AlertDialog
 
             override fun onPreExecute() {
@@ -180,7 +182,7 @@ abstract class AbstractShowsFragment<T>  : Fragment(), TvShows4MobileViewModel.S
             override fun doInBackground(vararg params: Void?): List<Link>? {
                 try {
                     return getDownloadLink(episode)
-                }catch (e: Exception){
+                } catch (e: Exception) {
                     return null
                 }
             }
@@ -189,7 +191,7 @@ abstract class AbstractShowsFragment<T>  : Fragment(), TvShows4MobileViewModel.S
                 super.onPostExecute(links)
                 progressDialog.dismiss()
 
-                if (links == null || links.isEmpty() == true){
+                if (links == null || links.isEmpty() == true) {
                     Toast.makeText(context, R.string.error_message, Toast.LENGTH_LONG).show()
                     return
                 }
@@ -204,20 +206,20 @@ abstract class AbstractShowsFragment<T>  : Fragment(), TvShows4MobileViewModel.S
                     dialog.dismiss()
 
                     when (position) {
-                        0 -> links.forEach { if (it.type == Link.GP3) enqueue(episode, it)  }
-                        1 -> links.forEach { if (it.type == Link.MP4) enqueue(episode, it)  }
-                        2 -> links.forEach { if (it.type == Link.HD) enqueue(episode, it)  }
+                        0 -> links.forEach { if (it.type == Link.GP3) enqueue(episode, it) }
+                        1 -> links.forEach { if (it.type == Link.MP4) enqueue(episode, it) }
+                        2 -> links.forEach { if (it.type == Link.HD) enqueue(episode, it) }
                     }
                 }
 
                 dialog.show()
             }
 
-            fun enqueue(episode: Episode, link: Link){
+            fun enqueue(episode: Episode, link: Link) {
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link.link));
                 try {
                     startActivity(intent)
-                }catch (ex: ActivityNotFoundException){
+                } catch (ex: ActivityNotFoundException) {
                     ex.printStackTrace()
                 }
             }

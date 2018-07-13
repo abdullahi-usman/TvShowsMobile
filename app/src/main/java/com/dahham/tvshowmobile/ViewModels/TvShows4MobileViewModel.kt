@@ -94,7 +94,8 @@ class TvShows4MobileViewModel : ViewModel() {
     fun getShowsProperties(vararg shows: Show, listener: ShowsViewModelListener<Show>?, photoDownloadLocation: String?) {
         listener?.onStarted()
 
-        val flowable = Flowable.create({ e: FlowableEmitter<Show> ->
+        var flowable : Disposable? = null
+        flowable = Flowable.create({ e: FlowableEmitter<Show> ->
 
             for (show in shows) {
                 try {
@@ -138,7 +139,6 @@ class TvShows4MobileViewModel : ViewModel() {
                         out_put?.flush()
                         out_put?.close()
                         stream?.close()
-
                     }
 
                 }
@@ -150,9 +150,12 @@ class TvShows4MobileViewModel : ViewModel() {
         }, BackpressureStrategy.BUFFER).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe({
             listener?.onNext(it, "")
         }, {
+            disposables.remove(flowable)
             listener?.onError(it)
+
             it.printStackTrace()
         }, {
+            disposables.remove(flowable)
             listener?.onCompleted()
         })
 
@@ -168,7 +171,8 @@ class TvShows4MobileViewModel : ViewModel() {
         setState(TYPE.ALL_TV_SHOWS, STATE.STARTED)
         listner?.onStarted()
 
-        val flowable = Flowable.create({ e: FlowableEmitter<Show> ->
+        var flowable : Disposable? = null
+        flowable = Flowable.create({ e: FlowableEmitter<Show> ->
 
             setState(TYPE.ALL_TV_SHOWS, STATE.RUNNING)
 
@@ -190,9 +194,12 @@ class TvShows4MobileViewModel : ViewModel() {
             shows.value = _shows
         }, {
             setState(TYPE.ALL_TV_SHOWS, STATE.STOPPED)
+            disposables.remove(flowable)
             listner?.onError(it)
+
             it.printStackTrace()
         }, {
+            disposables.remove(flowable)
             listner?.onCompleted()
         })
 
@@ -209,7 +216,9 @@ class TvShows4MobileViewModel : ViewModel() {
         setState(TYPE.LASTEST_TV_EPISODES, STATE.STARTED)
         listner?.onStarted()
 
-        val flowable = Flowable.create<LastestEpisode>({ e: FlowableEmitter<LastestEpisode> ->
+        var flowable: Disposable? =  null
+
+        flowable = Flowable.create<LastestEpisode>({ e: FlowableEmitter<LastestEpisode> ->
 
             setState(TYPE.LASTEST_TV_EPISODES, STATE.RUNNING)
 
@@ -231,9 +240,12 @@ class TvShows4MobileViewModel : ViewModel() {
             lastestEpisodes.value = _lastestEpisodes
         }, {
             setState(TYPE.LASTEST_TV_EPISODES, STATE.STOPPED)
+            disposables.remove(flowable)
             listner?.onError(it)
+
             it.printStackTrace()
         }, {
+            disposables.remove(flowable)
             listner?.onCompleted()
         })
 
@@ -249,7 +261,8 @@ class TvShows4MobileViewModel : ViewModel() {
         setState(TYPE.EPISODE, STATE.STARTED)
 
         listner?.onStarted()
-        val flowable = Flowable.create<Episode>({ e: FlowableEmitter<Episode> ->
+        var flowable : Disposable? = null
+        flowable = Flowable.create<Episode>({ e: FlowableEmitter<Episode> ->
 
             setState(TYPE.EPISODE, STATE.RUNNING)
             try {
@@ -270,9 +283,12 @@ class TvShows4MobileViewModel : ViewModel() {
             episodes.value = _episodes
         }, {
             setState(TYPE.EPISODE, STATE.STOPPED)
+            disposables.remove(flowable)
             listner?.onError(it)
+
             it.printStackTrace()
         }, {
+            disposables.remove(flowable)
             listner?.onCompleted()
         })
 
