@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentPagerAdapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.dahham.tvshowmobile.R
 import com.google.android.gms.ads.AdListener
 import kotlinx.android.synthetic.main.fragment_source.*
@@ -45,6 +46,7 @@ class TvShows4MobileFragment : Fragment() {
                 adView?.visibility = View.VISIBLE
             }
         }
+        adView.loadAd(com.google.android.gms.ads.AdRequest.Builder().build())
     }
 
     override fun onStart() {

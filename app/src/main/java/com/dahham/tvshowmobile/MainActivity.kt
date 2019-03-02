@@ -14,8 +14,11 @@ import android.view.MenuItem
 import android.widget.Toast
 import com.dahham.tvshowmobile.fragments.DownloadsFragment
 import com.dahham.tvshowmobile.fragments.TvShows4MobileFragment
+import com.google.ads.AdRequest
+import com.google.android.gms.ads.MobileAds
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main_drawer.*
+import kotlinx.android.synthetic.main.fragment_source.*
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -51,7 +54,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             tvshows4mobile_fragment()
         }
 
-        //MobileAds.initialize(this, "ca-app-pub-5849046006048060~4044363744")
+        MobileAds.initialize(this, "ca-app-pub-6492058177163518~1729435404")
+
     }
 
     override fun onStart() {

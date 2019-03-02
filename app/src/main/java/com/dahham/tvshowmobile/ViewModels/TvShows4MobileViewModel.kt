@@ -164,9 +164,11 @@ class TvShows4MobileViewModel : ViewModel() {
 
     fun loadAllTVShows(listner: ShowsViewModelListener<Show>?) {
 
-        if (getState(TYPE.ALL_TV_SHOWS) > STATE.STOPPED) {
+        val state = getState(TYPE.LASTEST_TV_EPISODES)
+        if (state == STATE.RUNNING || state == STATE.STARTED) {
             return
         }
+
 
         setState(TYPE.ALL_TV_SHOWS, STATE.STARTED)
         listner?.onStarted()
@@ -209,7 +211,8 @@ class TvShows4MobileViewModel : ViewModel() {
 
     fun loadLastestEpisodes(listner: ShowsViewModelListener<LastestEpisode>?) {
 
-        if (getState(TYPE.LASTEST_TV_EPISODES) > STATE.STOPPED) {
+        val state = getState(TYPE.LASTEST_TV_EPISODES)
+        if (state == STATE.RUNNING || state == STATE.STARTED) {
             return
         }
 
@@ -254,9 +257,12 @@ class TvShows4MobileViewModel : ViewModel() {
 
 
     fun loadEpisodes(series: Series, listner: ShowsViewModelListener<Episode>?) {
-        if (getState(TYPE.EPISODE) > STATE.STOPPED) {
+
+        val state = getState(TYPE.LASTEST_TV_EPISODES)
+        if (state == STATE.RUNNING || state == STATE.STARTED) {
             return
         }
+
 
         setState(TYPE.EPISODE, STATE.STARTED)
 

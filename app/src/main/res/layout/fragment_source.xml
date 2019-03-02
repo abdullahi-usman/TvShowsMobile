@@ -40,7 +40,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         ads:adSize="BANNER"
-        ads:adUnitId="ca-app-pub-5849046006048060/9308298714"
+        ads:adUnitId="ca-app-pub-6492058177163518/9715736634"
         app:layout_anchor="@id/fragment"
         app:layout_anchorGravity="bottom|center_horizontal"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"

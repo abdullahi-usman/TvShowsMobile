@@ -40,7 +40,6 @@ abstract class AbstractShowsFragment<T> : Fragment(), TvShows4MobileViewModel.Sh
     lateinit var lifecycle: TvShows4MobileLifeCycle<T>
     lateinit var data: LiveData<List<T>>
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
