@@ -94,13 +94,18 @@ class TvShows4MobileLastestEpisodes : AbstractShowsFragment<LastestEpisode>() {
 
             holder._itemView.lastest_date_added.text = getString(R.string.show_added_date, lastestEpisode?.dateAdded)
 
-//            holder._itemView.lastest_episode_download.setOnClickListener {}
-
-            holder._itemView.lastest_episode_container.setOnClickListener {
+            holder._itemView.lastest_episode_download.setOnClickListener {
                 if (holder.episode != null) {
-                    download (holder.episode!!)
+                    //download (holder.episode!!)
                 }
             }
+
+//            holder._itemView.lastest_episode_container.setOnClickListener
+//            {
+//                if (holder.episode != null) {
+//                    download (holder.episode!!)
+//                }
+//            }
 
         }
 

@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             tvshow4mobile = supportFragmentManager.getFragment(savedInstanceState, TVSHOWS4MOBILE_TAG) as TvShows4MobileFragment
         }
 
-        if (savedInstanceState?.containsKey(DOWNLOADS_FRAGMENT_TAG) == true){
+        if (savedInstanceState?.containsKey(DOWNLOADS_FRAGMENT_TAG) == true) {
             downloads = supportFragmentManager.getFragment(savedInstanceState, DOWNLOADS_FRAGMENT_TAG) as DownloadsFragment
         }
 
@@ -50,11 +50,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         drawer_layout.addDrawerListener(toggler)
         nav_menu.setNavigationItemSelectedListener(this)
 
+        //supportFragmentManager.beginTransaction().add(downloads, downloads.tag).add(tvshow4mobile, tvshow4mobile.tag).commit()
+
+        //if (savedInstanceState != null) return
+
         if (supportFragmentManager.fragments.contains(tvshow4mobile).not()) {
-            tvshows4mobile_fragment()
+            //tvshows4mobile_fragment()
+            supportFragmentManager.beginTransaction().replace(R.id.fragment, tvshow4mobile, TVSHOWS4MOBILE_TAG).addToBackStack(TVSHOWS4MOBILE_TAG).commit()
+
         }
 
-        MobileAds.initialize(this, "ca-app-pub-6492058177163518~1729435404")
+        //MobileAds.initialize(this, "ca-app-pub-6492058177163518~1729435404")
 
     }
 
@@ -85,7 +91,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //    }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        drawer_layout.closeDrawer(GravityCompat.START)
+
         when (item.itemId) {
             R.id.nav_share -> share()
             R.id.nav_send -> sendEmail()
@@ -94,14 +100,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_tvshows4mobile -> tvshows4mobile_fragment()
         }
 
+        drawer_layout.closeDrawer(GravityCompat.START)
         return true
     }
-    fun tvshows4mobile_fragment(){
-        switchFragments(tvshow4mobile, TVSHOWS4MOBILE_TAG)
+
+    fun tvshows4mobile_fragment() {
+        supportFragmentManager.popBackStack()
+//        switchFragments(tvshow4mobile, TVSHOWS4MOBILE_TAG)
     }
 
-    fun downloads_fragment(){
-        switchFragments(downloads, DOWNLOADS_FRAGMENT_TAG)
+    fun downloads_fragment() {
+        supportFragmentManager.beginTransaction().replace(R.id.fragment, downloads, DOWNLOADS_FRAGMENT_TAG).addToBackStack(DOWNLOADS_FRAGMENT_TAG).commit()
+//        switchFragments(downloads, DOWNLOADS_FRAGMENT_TAG)
     }
 
     fun developer() {

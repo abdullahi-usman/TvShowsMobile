@@ -24,6 +24,9 @@ android {
 //        }
 
         vectorDrawables.useSupportLibrary = true
+        if (!getMultiDexEnabled()){
+            multiDexEnabled true
+        }
     }
     buildTypes {
         debug {

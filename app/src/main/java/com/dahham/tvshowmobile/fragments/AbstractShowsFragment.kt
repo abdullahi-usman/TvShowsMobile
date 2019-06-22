@@ -27,6 +27,7 @@ import com.dahham.tvshowmobile.Models.Link
 import com.dahham.tvshowmobile.R
 import com.dahham.tvshowmobile.ViewModels.TvShows4MobileViewModel
 import kotlinx.android.synthetic.main.show_contents_container.*
+import java.lang.ref.WeakReference
 
 
 /**

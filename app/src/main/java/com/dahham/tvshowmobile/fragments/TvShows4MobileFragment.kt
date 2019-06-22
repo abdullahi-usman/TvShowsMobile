@@ -22,6 +22,12 @@ import kotlinx.android.synthetic.main.fragment_source.*
  */
 class TvShows4MobileFragment : Fragment() {
 
+    //val showsAdapter: ShowAdapter? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+    }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
@@ -31,7 +37,7 @@ class TvShows4MobileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (show_tab_container.adapter == null) {
+        if (savedInstanceState == null) {
             show_tab_container.adapter = ShowAdapter(childFragmentManager)
 
             show_tab_container.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(shows_categories_tab))
@@ -52,6 +58,15 @@ class TvShows4MobileFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         //adView.loadAd(AdRequest.Builder().build())
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+    }
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putString("", "mainfragment")
     }
 
     private inner class ShowAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
